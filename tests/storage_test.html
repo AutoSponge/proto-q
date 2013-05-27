@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <head>
+        <title>Storage Test</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" href="protoQ.css" type="text/css" media="screen" />
+        <script type="text/javascript" src="../protoQ.js"></script>
+        <script>
+            var getSavedCount = Q.Storage.Local({
+                action: "getItem",
+                key: "test_count",
+                expects: "n:0"
+            });
+
+            var saveCount = getSavedCount.clone({
+                action: "setItem",
+                value: function () {
+                    return getSavedCount.results + 1
+                }
+            });
+
+            var getCount = getSavedCount.clone();
+
+            var storeArray = Q.Storage({
+                action: "setItem",
+                key: "arrayType",
+                value: [1, 2, 3]
+            });
+
+            var getStoredArray = Q.Storage({
+                key: "arrayType",
+                action: "getItem",
+                store: storeArray.config.store
+            });
+
+            var removeLocal = Q.Storage.Local({
+                action: "removeItem",
+                key: "objType"
+            });
+
+            var getRemovedObject = Q.Storage.Local({
+                action: "getItem",
+                key: "objType",
+                expects: "j:{}"
+            });
+
+            Q.Storage.Local({
+                action: "setItem",
+                key: "objType",
+                value: {test: "this", obj: "thing"}
+            });
+
+            var getObject = getRemovedObject.clone();
+
+            //firefox doesn't like sessionStorage offline
+            if (Q.Storage.Session) {
+                Q.Storage.Session({
+                    action: "setItem",
+                    key: "Q",
+                    value: true
+                });
+
+                var getSession = Q.Storage.Session({action: "getItem", key: "Q"});
+            }
+
+            Q.Test({
+                test: [{
+                        message: "Store numbers",
+                        fn: function () {
+                            return (getSavedCount.results < saveCount.results);
+                        }, expects: true
+                    }, {
+                        fn: function () {
+                            return (getCount.results === saveCount.results);
+                        }, expects: true
+                    }]
+            });
+            
+            Q.Test({
+                test: {
+                    message: "Remove stored item (local)",
+                    fn: function () {
+                        return typeof getRemovedObject.results;
+                    }, expects: "object"
+                }
+            });
+
+            Q.Test({
+                test: {
+                    message: "Store array (page)",
+                    fn: function () {
+                        return JSON.stringify(getStoredArray.results);
+                    }, expects: JSON.stringify([1, 2, 3])
+                }
+            });
+
+            Q.Test({
+                test: {
+                    message: "Store object (local)",
+                    fn: function () {
+                        return JSON.stringify(getObject.results);
+                    }, expects: JSON.stringify({test: "this", obj: "thing"})
+                }
+            });
+
+            if (Q.Storage.Session) {
+                Q.Test({
+                    test: [{
+                        message: "Store boolean (session)",
+                        fn: function () {
+                            return sessionStorage.Q;
+                        }, expects: "b:true"
+                    }, {
+                        fn: function () {
+                            return getSession.results;
+                        }, expects: true
+                    }]
+                });
+            }
+
+            Q.Js({fn: function () {
+                    var doc = document,
+                    resultsElm = doc.getElementById("results"),
+                    title = doc.getElementById("test-header"),
+                    li, status, message, tests = Q.Test.instance,
+                    user = doc.getElementById("userAgent"),
+                    stop = 1, expected, results;
+                    user.textContent = window.navigator.userAgent;
+                    title.textContent = doc.title;
+                    tests.forEach(function (test) {
+                        li = doc.createElement("LI");
+                        status = test.status;
+                        if (test.config.test.length) {
+                            message = test.config.test[0].message;
+                            stop = test.results.length;
+                            expected = test.config.test[stop - 1].expects;
+                            results = test.results[stop - 1];
+                        } else {
+                            message = test.config.test.message;
+                            expected = test.config.test.expects;
+                            results = test.results;
+                        }
+                        li.setAttribute("class", status);
+                        message += " ... " + status
+                        if (status === "failed") {
+                            message += " (#" + stop || "";
+                            message += " expected: " + JSON.stringify(expected) + ", ";
+                            message += " results: " + JSON.stringify(results) + ")";
+                        }
+                        li.textContent = message;
+                        resultsElm.appendChild(li);
+                    });
+                }
+            });
+/**/
+            Q.start();
+            
+        </script>
+    </head>
+    <body>
+        <h1 id="test-header"></h1>
+        <h2 id="userAgent"></h2>
+        <ol id="results"></ol>
+    </body>
+</html>

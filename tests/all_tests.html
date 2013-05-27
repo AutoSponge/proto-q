@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script>
+            function newFrame(url) {
+                var doc = document,
+                container = doc.getElementById("container"),
+                old = doc.getElementById("test"),
+                iframe = doc.createElement("IFRAME");
+                if (old) {
+                    container.removeChild(old);
+                }
+                iframe.setAttribute("id", "test");
+                iframe.setAttribute("src", url);
+                iframe.setAttribute("frameborder", 0);
+                iframe.style.width = 640+"px";
+                iframe.style.height = 480+"px";
+                container.appendChild(iframe);
+                return false;
+            }
+        </script>
+        <style>
+            #navcontainer
+            {
+                background: #fff;
+                float: left;
+                width: 30%;
+                font-family: georgia, serif;
+                font-size: 25px;
+                text-transform: lowercase;
+                position: relative;
+            }
+
+            #navcontainer span {
+                position: absolute;
+                right: 0;
+            }
+
+            #navcontainer img
+            {
+                vertical-align: middle;
+                height: 25px;
+                border: 0;
+            }
+
+            ul#navlist
+            {
+                text-align: left;
+                list-style: none;
+                padding: 0;
+            }
+
+            ul#navlist li
+            {
+                display: block;
+                margin: 0;
+                padding: 0;
+            }
+
+            ul#navlist li a
+            {
+                display: block;
+                width: 80%;
+                padding: 0.2em 0 0.2em 1em;
+                border-width: 1px;
+                border-color: #fff #aaab9c #ccc #fff;
+                border-style: solid;
+                color: #777;
+                text-decoration: none;
+                background: #D2E0E6;
+            }
+
+            #navcontainer>ul#navlist li a { width: auto; }
+
+            ul#navlist li#active a
+            {
+                background: #f0e7d7;
+                color: #800000;
+            }
+
+            ul#navlist li a:hover, ul#navlist li#active a:hover
+            {
+                color: #0D3349;
+                background: transparent;
+                border-color: #aaab9c #2B81AF #2B81AF #ccc;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navcontainer">
+            <ul id="navlist">
+                <li><a href="#" onclick="newFrame(this.rel)" rel="test_test.html">test
+                        <span>
+                            <img alt="iphone" src="iphone.sm.png">
+                            <img alt="android" src="android.sm.png">
+                            <img alt="chrome" src="chrome.sm.png">
+                            <img alt="webkit" src="webkit.sm.png">
+                            <img alt="gecko" src="gecko.sm.png">
+                            <img alt="opera" src="opera.sm.png">
+                        </span>
+                    </a>
+                </li>
+                <li><a href="#" onclick="newFrame(this.rel)" rel="ajax_test.html">ajax
+                        <span>
+                            <img alt="iphone" src="iphone.sm.png">
+                            <img alt="android" src="android.sm.png">
+                            <img alt="chrome" src="chrome.sm.png">
+                            <img alt="webkit" src="webkit.sm.png">
+                            <img alt="gecko" src="gecko.sm.png">
+                            <img alt="opera" src="opera.sm.png">
+                        </span>
+                    </a></li>
+                <li><a href="#" onclick="newFrame(this.rel)" rel="script_test.html">script
+                        <span>
+                            <img alt="iphone" src="iphone.sm.png">
+                            <img alt="android" src="android.sm.png">
+                            <img alt="chrome" src="chrome.sm.png">
+                            <img alt="webkit" src="webkit.sm.png">
+                            <img alt="gecko" src="gecko.sm.png">
+                            <img alt="opera" src="opera.sm.png">
+                        </span>                    
+                    </a>
+                </li>
+                <li><a href="#" onclick="newFrame(this.rel)" rel="storage_test.html">storage
+                        <span>
+                            <img alt="iphone" src="iphone.sm.png">
+                            <img alt="chrome" src="chrome.sm.png">
+                            <img alt="webkit" src="webkit.sm.png">
+                            <img alt="gecko" src="gecko.sm.png">
+                            <img alt="opera" src="opera.sm.png">
+                        </span>                    
+                    </a>
+                </li>
+                <li><a href="#" onclick="newFrame(this.rel)" rel="worker_test.html">worker
+                        <span>
+                            <img alt="chrome" src="chrome.sm.png">
+                            <img alt="webkit" src="webkit.sm.png">
+                            <img alt="gecko" src="gecko.sm.png">
+                            <img alt="opera" src="opera.sm.png">
+                        </span>
+                    </a>
+                </li>
+                <li><a href="#" onclick="newFrame(this.rel)" rel="js_test.html">js
+                        <span>
+                            <img alt="iphone" src="iphone.sm.png">
+                            <img alt="android" src="android.sm.png">
+                            <img alt="chrome" src="chrome.sm.png">
+                            <img alt="webkit" src="webkit.sm.png">
+                            <img alt="gecko" src="gecko.sm.png">
+                            <img alt="opera" src="opera.sm.png">
+                        </span>
+                    </a>
+                </li>
+                <li><a href="#" onclick="newFrame(this.rel)" rel="sql_test.html">sql
+                        <span>
+                            <img alt="iphone" src="iphone.sm.png">
+                            <img alt="chrome" src="chrome.sm.png">
+                            <img alt="webkit" src="webkit.sm.png">
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div id="container"></div>
+    </body>
+</html>

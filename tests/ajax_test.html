@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <head>
+        <title>Ajax Test</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" href="protoQ.css" type="text/css" media="screen" />
+        <script type="text/javascript" src="../protoQ.js"></script>
+        <script>
+            var bad_ajax = Q.Ajax({url:"bad_ajax_test.js"});
+
+            var ajax = Q.Ajax({url:"ajax_test.js"});
+
+            var xml = Q.Ajax({
+                url: "xml_test.xml",
+                accepts: "text/xml",
+                dataType: "xml"
+            });
+
+            Q.Test({
+                test: {
+                    message: "Ajax fail gracefully",
+                    fn: function () {
+                        return bad_ajax.status;
+                    },
+                    expects: "failure"
+
+                }
+            });
+
+            Q.Test({
+                test: [{
+                    message: "Ajax JSON data",
+                    fn: function () {
+                        return ajax.results.string_prop;
+                    },
+                    expects: "test"
+                }, {
+                    fn: function () {
+                        return ajax.results.array_prop.length;
+                    },
+                    expects: 4
+                }, {
+                    fn: function () {
+                        return ajax.results.obj_prop.test;
+                    },
+                    expects: "sweet"
+                }, {
+                    fn: function () {
+                        return ajax.results.number_prop;
+                    },
+                    expects: 55
+                }, {
+                    fn: function () {
+                        return ajax.results.boolean_prop;
+                    },
+                    expects: true
+                }]
+            });
+
+            Q.Test({
+                test: {
+                    message: "Ajax XML data",
+                    fn: function () {
+                        if (xml.results) {
+                            return xml.results.getElementsByTagName("test")[0].textContent;
+                        } else {
+                            return "xml.results undefined";
+                        }
+                    },
+                    expects: "Success"
+                }
+            });
+
+            Q.Js({fn: function () {
+                    var doc = document,
+                    resultsElm = doc.getElementById("results"),
+                    title = doc.getElementById("test-header"),
+                    li, status, message, tests = Q.Test.instance,
+                    user = doc.getElementById("userAgent"),
+                    stop = 1, expected, results;
+                    user.textContent = window.navigator.userAgent;
+                    title.textContent = doc.title;
+                    tests.forEach(function (test) {
+                        li = doc.createElement("LI");
+                        status = test.status;
+                        if (test.config.test.length) {
+                            message = test.config.test[0].message;
+                            stop = test.results.length;
+                            expected = test.config.test[stop - 1].expects;
+                            results = test.results[stop - 1];
+                        } else {
+                            message = test.config.test.message;
+                            expected = test.config.test.expects;
+                            results = test.results;
+                        }
+                        li.setAttribute("class", status);
+                        message += " ... " + status
+                        if (status === "failed") {
+                            message += " (#" + stop || "";
+                            message += " expected: " + JSON.stringify(expected) + ", ";
+                            message += " results: " + JSON.stringify(results) + ")";
+                        }
+                        li.textContent = message;
+                        resultsElm.appendChild(li);
+                    });
+                }
+            });
+
+            Q.start();
+        </script>
+    </head>
+    <body>
+        <h1 id="test-header"></h1>
+        <h2 id="userAgent"></h2>
+        <ol id="results"></ol>
+    </body>
+</html>

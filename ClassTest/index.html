@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!--
+Import JSLitmus, the perforamnce testbed we'll use, and the libraries that
+provide the inheritance schemes.  There aren't any dependencies between these
+libraries, by the way. Also note that "jclass.js" is just a copy/paste of the
+code in John Resig's blog post (see link below).
+-->
+<script src="JSLitmus.js"></script>
+<script src="jclass.js"></script>
+<script src="base2.js"></script>
+<script src="prototype-1.6.0.3.js"></script>
+<script src="App.js"></script>
+
+<script>
+// Homebrewed class and subclass with ad-hoc "move aside" inheritance.  This'll
+// be fast, but it's not a viable long-term strategy for a library (just too
+// messy when done in bulk).
+var AdHocClass = function() {}
+AdHocClass.prototype.foobar = function() {return 'fubar';};
+
+AdHocSub = function() {}
+AdHocSub.prototype = new AdHocClass();
+AdHocSub.prototype.foobar_super = AdHocSub.prototype.foobar;
+AdHocSub.prototype.foobar = function() {
+  return this.foobar_super();
+};
+
+// A class and subclass using the implementation proposed by John Resig
+// http://ejohn.org/blog/simple-javascript-inheritance/
+var ResigClass = jClass.extend({
+  foobar: function() {
+    return 'fubar';
+  }
+});
+var ResigSub = ResigClass.extend({
+  foobar: function() {
+    return this._super();
+  }
+});
+
+// A class and subclass using Dean Edward's Base2 lib
+// http://code.google.com/p/base2/
+var BaseClass = base2.Base.extend({
+  foobar: function() {
+    return 'fubar';
+  }
+});
+var BaseSub = BaseClass.extend({
+  foobar: function() {
+    return this.base();
+  }
+});
+
+// A class and subclass using the Prototype library
+// http://prototypejs.org
+var ProtoClass = Class.create({
+  foobar: function() {
+    return 'fubar';
+  }
+});
+var ProtoSub = Class.create(ProtoClass, {
+  foobar: function($super) {
+    return $super();
+  }
+});
+
+UI.Class.prototype.foobar = function () {
+    return 'fubar';
+};
+UI.Class().subClass("UI.Sub");
+
+//
+// Now that we have the class implementations defined let's do some testing ...
+//
+
+// Test how long instantiation of the base classes take
+JSLitmus.test('Instantiate AdHoc class', function(count) {
+  var tc = AdHocClass; while (count--) var x = new tc();
+});
+JSLitmus.test('Instantiate Resig class', function(count) {
+  var tc = ResigClass; while (count--) var x = new tc();
+});
+JSLitmus.test('Instantiate Base class', function(count) {
+  var tc = BaseClass; while (count--) var x = new tc();
+});
+JSLitmus.test('Instantiate Proto class', function(count) {
+  var tc = ProtoClass; while (count--) var x = new tc();
+});
+JSLitmus.test('Instantiate UI class', function(count) {
+  var tc = UI.Class; while (count--) var x = new tc();
+});
+
+
+// Test how long instantiation of the subclasses takes
+JSLitmus.test('Instantiate AdHoc subclass', function(count) {
+  var tc = AdHocSub; while (count--) var x = new tc();
+});
+JSLitmus.test('Instantiate Resig subclass', function(count) {
+  var tc = ResigSub; while (count--) var x = new tc();
+});
+JSLitmus.test('Instantiate Base subclass', function(count) {
+  var tc = BaseSub; while (count--) var x = new tc();
+});
+JSLitmus.test('Instantiate Proto subclass', function(count) {
+  var tc = ProtoSub; while (count--) var x = new tc();
+});
+JSLitmus.test('Instantiate UI subclass', function(count) {
+  var tc = UI.Sub; while (count--) var x = new tc();
+});
+
+// See how long it takes to call the base class methods
+JSLitmus.test('Call method in AdHoc class', function(count) {
+  var obj = new AdHocClass(); while (count--) obj.foobar();
+});
+JSLitmus.test('Call method in Resig class', function(count) {
+  var obj = new ResigClass(); while (count--) obj.foobar();
+});
+JSLitmus.test('Call method in Base class', function(count) {
+  var obj = new BaseClass(); while (count--) obj.foobar();
+});
+JSLitmus.test('Call method in Proto class', function(count) {
+  var obj = new ProtoClass(); while (count--) obj.foobar();
+});
+JSLitmus.test('Call method in UI class', function(count) {
+  var obj = new UI.Class(); while (count--) obj.foobar();
+});
+
+// See how long it takes to call the subclass methods
+JSLitmus.test('Call method in AdHoc subclass', function(count) {
+  var obj = new AdHocSub(); while (count--) obj.foobar();
+});
+JSLitmus.test('Call method in Resig subclass', function(count) {
+  var obj = new ResigSub(); while (count--) obj.foobar();
+});
+JSLitmus.test('Call method in Base subclass', function(count) {
+  var obj = new BaseSub(); while (count--) obj.foobar();
+});
+JSLitmus.test('Call method in Proto subclass', function(count) {
+  var obj = new ProtoSub(); while (count--) obj.foobar();
+});
+JSLitmus.test('Call method in UI subclass', function(count) {
+  var obj = new UI.Sub(); while (count--) obj.foobar();
+});
+</script>
+  </head>
+  <body>
+    This test uses JSLitmus to test the instantiation and method call speed
+    of various inheritance patterns.  This code was adapted from tests appearing
+    on <a href="http://www.broofa.com/2009/02/javascript-inheritance-performance/">Broofa.com</a>
+  </body>
+</html>

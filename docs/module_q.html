@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: Q  </title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css?stamp=1277838896.95" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css?stamp=1277838896.95" />
+
+    <script type="text/javascript" src="assets/api-js?stamp=1277838896.95"></script>
+    <script type="text/javascript" src="assets/ac-js?stamp=1277838896.95"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://code.google.com/p/proto-q/" title="protoQ Library">protoQ Library</a></h1>
+        <h3>Q&nbsp; <span class="subtitle">1.0.0</span></h3>
+        <a href="./index.html" title="protoQ Library">protoQ Library</a> 
+            &gt; <a href="./module_q.html" title="Q">Q</a>
+                
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                   
+                    <h3>Module: Q
+                    
+
+
+                    </h3>
+                    <div class="description summary">
+                        The Q module provides a way to use asynchronous features sequentially.
+This code was validated with <a href="http://jslint.com">JSLint</a> using
+options: jslint white: true, devel: true, onevar: true, undef: true,
+eqeqeq: true, plusplus: true, bitwise: true, regexp: true,
+newcap: true, immed: true, strict: true
+Predefined: sessionStorage, localStorage, Worker
+                    </div>
+
+
+
+                <div class="yui-gc">
+                    <div class="yui-u first">
+
+                            <p>This module contains the following classes:</p>
+                            <script>
+                            //var YUI_CLASS_LIST = [{"extends": {"superclass": {}, "events": {}, "configs": {}, "properties": {}, "methods": {}}, "description": "The easing module provides methods for customizing\nhow an animation behaves during each run.", "guessedname": "Q", "name": "Q"}, {"extends": {"superclass": {"Q.Class": "Q.Class"}, "events": {"Q.Class": [{"access": "", "deprecated": false, "name": "request"}]}, "configs": {}, "properties": {"Q.Class": [{"access": "protected", "deprecated": false, "name": "name"}]}, "methods": {"Q.Class": [{"access": "", "deprecated": false, "name": "clone"}, {"access": "", "deprecated": false, "name": "configure"}, {"access": "", "deprecated": false, "name": "execute"}, {"access": "", "deprecated": false, "name": "fire"}, {"access": "", "deprecated": false, "name": "multiton"}, {"access": "", "deprecated": false, "name": "request"}, {"access": "", "deprecated": false, "name": "singleton"}, {"access": "", "deprecated": false, "name": "start"}, {"access": "", "deprecated": false, "name": "subClass"}]}}, "description": "This class creates objects that communicate using an\nXMLHttpRequest object.", "guessedname": "Q.Ajax", "name": "Q.Ajax"}, {"extends": {"superclass": {}, "events": {}, "configs": {}, "properties": {}, "methods": {}}, "description": "The core class for Q.  This constructor can be\ncalled like a function with an optional options parameter\nwhich overrides default configuration.", "guessedname": "Q.Class", "name": "Q.Class"}, {"extends": {"superclass": {}, "events": {}, "configs": {}, "properties": {}, "methods": {}}, "description": "The Db class creates a singleton object to connect to\nan HTML5 SQLite database.  This class does not inherit\nthe methods of Class.  Instead, other classes rely on the\nQ.Db.instance and will instantiate the singleton as needed.\nThis class can be invoked like a function passing override\noptions as a parameter.", "guessedname": "Q.Db", "name": "Q.Db"}, {"extends": {"superclass": {"Q.Class": "Q.Class"}, "events": {"Q.Class": [{"access": "", "deprecated": false, "name": "request"}]}, "configs": {}, "properties": {"Q.Class": [{"access": "protected", "deprecated": false, "name": "name"}]}, "methods": {"Q.Class": [{"access": "", "deprecated": false, "name": "clone"}, {"access": "", "deprecated": false, "name": "configure"}, {"access": "", "deprecated": false, "name": "execute"}, {"access": "", "deprecated": false, "name": "fire"}, {"access": "", "deprecated": false, "name": "multiton"}, {"access": "", "deprecated": false, "name": "request"}, {"access": "", "deprecated": false, "name": "singleton"}, {"access": "", "deprecated": false, "name": "start"}, {"access": "", "deprecated": false, "name": "subClass"}]}}, "description": "This class creates a request object that will\nbecome a DOM object during execution. The DOM object\nwill have a tag of the tagName property and the\nattributes and events of the attribute and event properties.", "guessedname": "Q.Dom", "name": "Q.Dom"}, {"extends": {"superclass": {"Q.Dom": "Q.Dom", "Q.Class": "Q.Class"}, "events": {"Q.Class": [{"access": "", "deprecated": false, "name": "request"}]}, "configs": {}, "properties": {"Q.Class": [{"access": "protected", "deprecated": false, "name": "name"}]}, "methods": {"Q.Dom": [{"access": "", "deprecated": false, "name": "execute"}], "Q.Class": [{"access": "", "deprecated": false, "name": "clone"}, {"access": "", "deprecated": false, "name": "configure"}, {"access": "", "deprecated": false, "name": "execute"}, {"access": "", "deprecated": false, "name": "fire"}, {"access": "", "deprecated": false, "name": "multiton"}, {"access": "", "deprecated": false, "name": "request"}, {"access": "", "deprecated": false, "name": "singleton"}, {"access": "", "deprecated": false, "name": "start"}, {"access": "", "deprecated": false, "name": "subClass"}]}}, "description": "This class creates a request object that will\nbecome a SCRIPT tag during execution. The SCRIPT\nwill execute the next request object after the\nload event.", "guessedname": "Q.Dom.Script", "name": "Q.Dom.Script"}, {"extends": {"superclass": {"Q.Class": "Q.Class"}, "events": {"Q.Class": [{"access": "", "deprecated": false, "name": "request"}]}, "configs": {}, "properties": {"Q.Class": [{"access": "protected", "deprecated": false, "name": "name"}]}, "methods": {"Q.Class": [{"access": "", "deprecated": false, "name": "clone"}, {"access": "", "deprecated": false, "name": "configure"}, {"access": "", "deprecated": false, "name": "execute"}, {"access": "", "deprecated": false, "name": "fire"}, {"access": "", "deprecated": false, "name": "multiton"}, {"access": "", "deprecated": false, "name": "request"}, {"access": "", "deprecated": false, "name": "singleton"}, {"access": "", "deprecated": false, "name": "start"}, {"access": "", "deprecated": false, "name": "subClass"}]}}, "description": "This class creates objects with a fn property with\ntype {Function}.", "guessedname": "Q.Js", "name": "Q.Js"}, {"extends": {"superclass": {"Q.Class": "Q.Class"}, "events": {"Q.Class": [{"access": "", "deprecated": false, "name": "request"}]}, "configs": {}, "properties": {"Q.Class": [{"access": "protected", "deprecated": false, "name": "name"}]}, "methods": {"Q.Class": [{"access": "", "deprecated": false, "name": "clone"}, {"access": "", "deprecated": false, "name": "configure"}, {"access": "", "deprecated": false, "name": "execute"}, {"access": "", "deprecated": false, "name": "fire"}, {"access": "", "deprecated": false, "name": "multiton"}, {"access": "", "deprecated": false, "name": "request"}, {"access": "", "deprecated": false, "name": "singleton"}, {"access": "", "deprecated": false, "name": "start"}, {"access": "", "deprecated": false, "name": "subClass"}]}}, "description": "This class creates objects that will connect to a SQLite\ndatabase in thier execute method.  The stmt option can have\nplaceholders using {propertyName[:propertyName...]} notation.\nPlaceholders will resolve during execution and serve to allow\ncloning with fewer property replacements.", "guessedname": "Q.Sql", "name": "Q.Sql"}, {"extends": {"superclass": {"Q.Class": "Q.Class", "Q.Sql": "Q.Sql"}, "events": {"Q.Class": [{"access": "", "deprecated": false, "name": "request"}]}, "configs": {}, "properties": {"Q.Class": [{"access": "protected", "deprecated": false, "name": "name"}]}, "methods": {"Q.Class": [{"access": "", "deprecated": false, "name": "clone"}, {"access": "", "deprecated": false, "name": "configure"}, {"access": "", "deprecated": false, "name": "execute"}, {"access": "", "deprecated": false, "name": "fire"}, {"access": "", "deprecated": false, "name": "multiton"}, {"access": "", "deprecated": false, "name": "request"}, {"access": "", "deprecated": false, "name": "singleton"}, {"access": "", "deprecated": false, "name": "start"}, {"access": "", "deprecated": false, "name": "subClass"}], "Q.Sql": [{"access": "", "deprecated": false, "name": "dataHandler"}, {"access": "", "deprecated": false, "name": "errorHandler"}, {"access": "", "deprecated": false, "name": "execute"}]}}, "description": "This class creates a SQL drop table request object", "guessedname": "Q.Sql.Drop", "name": "Q.Sql.Drop"}, {"extends": {"superclass": {"Q.Class": "Q.Class", "Q.Sql": "Q.Sql"}, "events": {"Q.Class": [{"access": "", "deprecated": false, "name": "request"}]}, "configs": {}, "properties": {"Q.Class": [{"access": "protected", "deprecated": false, "name": "name"}]}, "methods": {"Q.Class": [{"access": "", "deprecated": false, "name": "clone"}, {"access": "", "deprecated": false, "name": "configure"}, {"access": "", "deprecated": false, "name": "execute"}, {"access": "", "deprecated": false, "name": "fire"}, {"access": "", "deprecated": false, "name": "multiton"}, {"access": "", "deprecated": false, "name": "request"}, {"access": "", "deprecated": false, "name": "singleton"}, {"access": "", "deprecated": false, "name": "start"}, {"access": "", "deprecated": false, "name": "subClass"}], "Q.Sql": [{"access": "", "deprecated": false, "name": "dataHandler"}, {"access": "", "deprecated": false, "name": "errorHandler"}, {"access": "", "deprecated": false, "name": "execute"}]}}, "description": "This class creates a SQL select * request object", "guessedname": "Q.Sql.Read", "name": "Q.Sql.Read"}, {"extends": {"superclass": {"Q.Class": "Q.Class"}, "events": {"Q.Class": [{"access": "", "deprecated": false, "name": "request"}]}, "configs": {}, "properties": {"Q.Class": [{"access": "protected", "deprecated": false, "name": "name"}]}, "methods": {"Q.Class": [{"access": "", "deprecated": false, "name": "clone"}, {"access": "", "deprecated": false, "name": "configure"}, {"access": "", "deprecated": false, "name": "execute"}, {"access": "", "deprecated": false, "name": "fire"}, {"access": "", "deprecated": false, "name": "multiton"}, {"access": "", "deprecated": false, "name": "request"}, {"access": "", "deprecated": false, "name": "singleton"}, {"access": "", "deprecated": false, "name": "start"}, {"access": "", "deprecated": false, "name": "subClass"}]}}, "description": "This class creates objects that communicate with a storage\nobject converting all data to type {String} on setItem\nand converting those strings to their natural primitive type\non getItem actions.  Other actions follow the HTML5 Storage\nAPI specification.", "guessedname": "Q.Storage", "name": "Q.Storage"}, {"extends": {"superclass": {"Q.Class": "Q.Class", "Q.Storage": "Q.Storage"}, "events": {"Q.Class": [{"access": "", "deprecated": false, "name": "request"}]}, "configs": {}, "properties": {"Q.Class": [{"access": "protected", "deprecated": false, "name": "name"}]}, "methods": {"Q.Class": [{"access": "", "deprecated": false, "name": "clone"}, {"access": "", "deprecated": false, "name": "configure"}, {"access": "", "deprecated": false, "name": "execute"}, {"access": "", "deprecated": false, "name": "fire"}, {"access": "", "deprecated": false, "name": "multiton"}, {"access": "", "deprecated": false, "name": "request"}, {"access": "", "deprecated": false, "name": "singleton"}, {"access": "", "deprecated": false, "name": "start"}, {"access": "", "deprecated": false, "name": "subClass"}], "Q.Storage": [{"access": "", "deprecated": false, "name": "execute"}]}}, "description": "This class creates a localStorage request object", "guessedname": "Q.Storage.Local", "name": "Q.Storage.Local"}, {"extends": {"superclass": {"Q.Class": "Q.Class", "Q.Storage": "Q.Storage"}, "events": {"Q.Class": [{"access": "", "deprecated": false, "name": "request"}]}, "configs": {}, "properties": {"Q.Class": [{"access": "protected", "deprecated": false, "name": "name"}]}, "methods": {"Q.Class": [{"access": "", "deprecated": false, "name": "clone"}, {"access": "", "deprecated": false, "name": "configure"}, {"access": "", "deprecated": false, "name": "execute"}, {"access": "", "deprecated": false, "name": "fire"}, {"access": "", "deprecated": false, "name": "multiton"}, {"access": "", "deprecated": false, "name": "request"}, {"access": "", "deprecated": false, "name": "singleton"}, {"access": "", "deprecated": false, "name": "start"}, {"access": "", "deprecated": false, "name": "subClass"}], "Q.Storage": [{"access": "", "deprecated": false, "name": "execute"}]}}, "description": "This class creates a sessionStorage request object", "guessedname": "Q.Storage.Session", "name": "Q.Storage.Session"}, {"extends": {"superclass": {"Q.Class": "Q.Class"}, "events": {"Q.Class": [{"access": "", "deprecated": false, "name": "request"}]}, "configs": {}, "properties": {"Q.Class": [{"access": "protected", "deprecated": false, "name": "name"}]}, "methods": {"Q.Class": [{"access": "", "deprecated": false, "name": "clone"}, {"access": "", "deprecated": false, "name": "configure"}, {"access": "", "deprecated": false, "name": "execute"}, {"access": "", "deprecated": false, "name": "fire"}, {"access": "", "deprecated": false, "name": "multiton"}, {"access": "", "deprecated": false, "name": "request"}, {"access": "", "deprecated": false, "name": "singleton"}, {"access": "", "deprecated": false, "name": "start"}, {"access": "", "deprecated": false, "name": "subClass"}]}}, "description": "A class for constructing Test objects", "guessedname": "Q.Test", "name": "Q.Test"}, {"extends": {"superclass": {"Q.Class": "Q.Class"}, "events": {"Q.Class": [{"access": "", "deprecated": false, "name": "request"}]}, "configs": {}, "properties": {"Q.Class": [{"access": "protected", "deprecated": false, "name": "name"}]}, "methods": {"Q.Class": [{"access": "", "deprecated": false, "name": "clone"}, {"access": "", "deprecated": false, "name": "configure"}, {"access": "", "deprecated": false, "name": "execute"}, {"access": "", "deprecated": false, "name": "fire"}, {"access": "", "deprecated": false, "name": "multiton"}, {"access": "", "deprecated": false, "name": "request"}, {"access": "", "deprecated": false, "name": "singleton"}, {"access": "", "deprecated": false, "name": "start"}, {"access": "", "deprecated": false, "name": "subClass"}]}}, "description": "This class creates a request object that will\ncommunicate with an HTML5 web worker.", "guessedname": "Q.Worker", "name": "Q.Worker"}];
+                            </script>
+                            <div id="splash_classList">
+                                <ul>
+                                    <li><a href="Q.html" title="Q" id="class_0">Q</a></li>
+                                    <li><a href="Q.Ajax.html" title="Q.Ajax" id="class_1">Q.Ajax</a></li>
+                                    <li><a href="Q.Class.html" title="Q.Class" id="class_2">Q.Class</a></li>
+                                    <li><a href="Q.Db.html" title="Q.Db" id="class_3">Q.Db</a></li>
+                                    <li><a href="Q.Dom.html" title="Q.Dom" id="class_4">Q.Dom</a></li>
+                                    <li><a href="Q.Dom.Script.html" title="Q.Dom.Script" id="class_5">Q.Dom.Script</a></li>
+                                    <li><a href="Q.Js.html" title="Q.Js" id="class_6">Q.Js</a></li>
+                                    <li><a href="Q.Sql.html" title="Q.Sql" id="class_7">Q.Sql</a></li>
+                                    <li><a href="Q.Sql.Drop.html" title="Q.Sql.Drop" id="class_8">Q.Sql.Drop</a></li>
+                                    <li><a href="Q.Sql.Read.html" title="Q.Sql.Read" id="class_9">Q.Sql.Read</a></li>
+                                    <li><a href="Q.Storage.html" title="Q.Storage" id="class_10">Q.Storage</a></li>
+                                    <li><a href="Q.Storage.Local.html" title="Q.Storage.Local" id="class_11">Q.Storage.Local</a></li>
+                                    <li><a href="Q.Storage.Session.html" title="Q.Storage.Session" id="class_12">Q.Storage.Session</a></li>
+                                    <li><a href="Q.Test.html" title="Q.Test" id="class_13">Q.Test</a></li>
+                                    <li><a href="Q.Worker.html" title="Q.Worker" id="class_14">Q.Worker</a></li>
+                                </ul>
+                            </div>
+                    </div>
+                    <div class="yui-u">
+
+                        </div>
+                </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class="selected"><a href="module_q.html" title="Q">Q</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="Q.html" title="Q">Q</a></li>
+                                <li class=""><a href="Q.Ajax.html" title="Q.Ajax">Q.Ajax</a></li>
+                                <li class=""><a href="Q.Class.html" title="Q.Class">Q.Class</a></li>
+                                <li class=""><a href="Q.Db.html" title="Q.Db">Q.Db</a></li>
+                                <li class=""><a href="Q.Dom.html" title="Q.Dom">Q.Dom</a></li>
+                                <li class=""><a href="Q.Dom.Script.html" title="Q.Dom.Script">Q.Dom.Script</a></li>
+                                <li class=""><a href="Q.Js.html" title="Q.Js">Q.Js</a></li>
+                                <li class=""><a href="Q.Sql.html" title="Q.Sql">Q.Sql</a></li>
+                                <li class=""><a href="Q.Sql.Drop.html" title="Q.Sql.Drop">Q.Sql.Drop</a></li>
+                                <li class=""><a href="Q.Sql.Read.html" title="Q.Sql.Read">Q.Sql.Read</a></li>
+                                <li class=""><a href="Q.Storage.html" title="Q.Storage">Q.Storage</a></li>
+                                <li class=""><a href="Q.Storage.Local.html" title="Q.Storage.Local">Q.Storage.Local</a></li>
+                                <li class=""><a href="Q.Storage.Session.html" title="Q.Storage.Session">Q.Storage.Session</a></li>
+                                <li class=""><a href="Q.Test.html" title="Q.Test">Q.Test</a></li>
+                                <li class=""><a href="Q.Worker.html" title="Q.Worker">Q.Worker</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="protoQ.js.html" title="protoQ.js">protoQ.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2010 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"url": "Q.html#method_clear", "access": "", "host": "Q", "type": "method", "name": "clear"}, {"url": "Q.Class.html#method_clone", "access": "", "host": "Q.Class", "type": "method", "name": "clone"}, {"url": "Q.Class.html#method_configure", "access": "", "host": "Q.Class", "type": "method", "name": "configure"}, {"url": "Q.Db.html#method_connect", "access": "", "host": "Q.Db", "type": "method", "name": "connect"}, {"url": "Q.Sql.html#method_dataHandler", "access": "", "host": "Q.Sql", "type": "method", "name": "dataHandler"}, {"url": "Q.Ajax.html#method_dataHandler", "access": "", "host": "Q.Ajax", "type": "method", "name": "dataHandler"}, {"url": "Q.html#property_doc", "access": "", "host": "Q", "type": "property", "name": "doc"}, {"url": "Q.Sql.html#method_errorHandler", "access": "", "host": "Q.Sql", "type": "method", "name": "errorHandler"}, {"url": "Q.html#method_event", "access": "", "host": "Q", "type": "method", "name": "event"}, {"url": "Q.Class.html#method_execute", "access": "", "host": "Q.Class", "type": "method", "name": "execute"}, {"url": "Q.Sql.html#method_execute", "access": "", "host": "Q.Sql", "type": "method", "name": "execute"}, {"url": "Q.Js.html#method_execute", "access": "", "host": "Q.Js", "type": "method", "name": "execute"}, {"url": "Q.Storage.html#method_execute", "access": "", "host": "Q.Storage", "type": "method", "name": "execute"}, {"url": "Q.Ajax.html#method_execute", "access": "", "host": "Q.Ajax", "type": "method", "name": "execute"}, {"url": "Q.Dom.html#method_execute", "access": "", "host": "Q.Dom", "type": "method", "name": "execute"}, {"url": "Q.Test.html#method_execute", "access": "", "host": "Q.Test", "type": "method", "name": "execute"}, {"url": "Q.Class.html#method_fire", "access": "", "host": "Q.Class", "type": "method", "name": "fire"}, {"url": "Q.html#method_getRequests", "access": "", "host": "Q", "type": "method", "name": "getRequests"}, {"url": "Q.html#method_getRunning", "access": "", "host": "Q", "type": "method", "name": "getRunning"}, {"url": "Q.html#method_length", "access": "", "host": "Q", "type": "method", "name": "length"}, {"url": "Q.html#method_mixin", "access": "", "host": "Q", "type": "method", "name": "mixin"}, {"url": "Q.Class.html#method_multiton", "access": "", "host": "Q.Class", "type": "method", "name": "multiton"}, {"url": "Q.Class.html#property_name", "access": "protected", "host": "Q.Class", "type": "property", "name": "name"}, {"url": "Q.html#method_push", "access": "", "host": "Q", "type": "method", "name": "push"}, {"url": "Q.Class.html#method_request", "access": "", "host": "Q.Class", "type": "method", "name": "request"}, {"url": "Q.Class.html#event_request", "access": "", "host": "Q.Class", "type": "event", "name": "request"}, {"url": "Q.html#property_requests", "access": "", "host": "Q", "type": "property", "name": "requests"}, {"url": "Q.Dom.Script.html#method_scriptHandler", "access": "", "host": "Q.Dom.Script", "type": "method", "name": "scriptHandler"}, {"url": "Q.html#method_setDOMloaded", "access": "", "host": "Q", "type": "method", "name": "setDOMloaded"}, {"url": "Q.html#method_setRunning", "access": "", "host": "Q", "type": "method", "name": "setRunning"}, {"url": "Q.html#method_shift", "access": "", "host": "Q", "type": "method", "name": "shift"}, {"url": "Q.Class.html#method_singleton", "access": "", "host": "Q.Class", "type": "method", "name": "singleton"}, {"url": "Q.html#method_start", "access": "", "host": "Q", "type": "method", "name": "start"}, {"url": "Q.Class.html#method_start", "access": "", "host": "Q.Class", "type": "method", "name": "start"}, {"url": "Q.html#method_stop", "access": "", "host": "Q", "type": "method", "name": "stop"}, {"url": "Q.Class.html#method_subClass", "access": "", "host": "Q.Class", "type": "method", "name": "subClass"}, {"url": "Q.html#property_win", "access": "", "host": "Q", "type": "property", "name": "win"}];
+</script>
+</body>
+</html>

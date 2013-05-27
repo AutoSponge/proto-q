@@ -1,0 +1,47 @@
+/**
+* This CSS was made to resemble the test results of QUnit.js.
+*/
+
+#test-header {
+    background-color:#0D3349;
+    color:#FFFFFF;
+    border-bottom:3px solid #FFFFFF;
+    font-family:"Helvetica Neue Light","HelveticaNeue-Light","Helvetica Neue",Calibri,Helvetica,Arial;
+    margin:0;
+    padding:0.5em 0 0.5em 1em;
+}
+
+#userAgent {
+    background-color: #2B81AF;
+    color:#FFFFFF;
+    border-bottom:1px solid #FFFFFF;
+    font-family:"Helvetica Neue Light","HelveticaNeue-Light","Helvetica Neue",Calibri,Helvetica,Arial;
+    font-size:small;
+    margin:0;
+    padding:0.5em 0 0.5em 2.5em;
+}
+
+#results {
+    font-family:"Helvetica Neue Light","HelveticaNeue-Light","Helvetica Neue",Calibri,Helvetica,Arial;
+    font-size:smaller;
+    list-style-position:inside;
+    margin:0;
+    padding:0;
+}
+
+#results li {
+    border-bottom:1px solid #FFFFFF;
+    font-size:small;
+    list-style-position:inside;
+    padding:0.4em 0.5em 0.4em 2.5em;
+}
+
+.passed {
+    background-color: #D2E0E6;
+    padding:0.5em 0 0.5em 1em;
+}
+
+.failed {
+    background-color: #EE5757;
+    padding:0.5em 0 0.5em 1em;
+}

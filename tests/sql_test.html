@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <head>
+        <title>Sql Test</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" href="protoQ.css" type="text/css" media="screen" />
+        <script type="text/javascript" src="../protoQ.js"></script>
+        <script>
+            var table = Q.Sql({
+                stmt: "SELECT tbl_name FROM sqlite_master WHERE type = ?",
+                args: ["table"]
+            });
+
+            var create = Q.Sql({
+                stmt: "CREATE TABLE IF NOT EXISTS qtest (key TEXT NOT NULL, value TEXT, UNIQUE(key));"
+            });
+
+            var insert = Q.Sql({
+                stmt: "INSERT OR REPLACE INTO {tableName} VALUES(?, ?);",
+                tableName: "qtest",
+                args: ["one", 1]
+            });
+
+            var bulkTest = insert.clone({args: [["two", 2], ["three", 3]]});
+
+            var errorTest = insert.clone({tableName: "WRONGqtest",});
+
+            var bulkErrorTest = bulkTest.clone({tableName: "WRONGqtest",});
+
+            var gracefulBulkErrorTest = bulkTest.clone({args: [["four", 5, 5], ["four", 4]]});
+
+            var readBulkTest = Q.Sql.Read({tableName: "qtest"});
+
+            var drop = Q.Sql.Drop({tableName: "qtest"});
+
+            var reReadBulkTest = readBulkTest.clone();
+
+            Q.Test({
+                test: {
+                    message: "Db Connection",
+                    fn: function () {
+                        return (typeof Q.Db().connection === "undefined");
+                    },
+                    expects: false
+                }
+            });
+
+            Q.Test({
+                test: {
+                    message: "Db singleton",
+                    fn: function () {
+                        return (Q.Db().connection === Q.Db.instance.connection);
+                    },
+                    expects: true
+                }
+            });
+
+            Q.Test({
+                test: [{
+                        message: "Sql execution",
+                        fn: function () {
+                            return (table.results && table.results.length > 0);
+                        },
+                        expects: true
+
+                    }, {
+                        fn: function () {
+                            return table.results[0].tbl_name;
+                        },
+                        expects: "__WebKitDatabaseInfoTable__"
+                    }]
+            });
+
+            Q.Test({
+                test: [{
+                        message: "Sql graceful bulk inserts",
+                        fn: function () {
+                            return (readBulkTest.results.length === 4);
+                        },
+                        expects: true
+
+                    }, {
+                        fn: function () {
+                            return (readBulkTest.results[3].value === "4.0");
+                        },
+                        expects: true
+                    }]
+            });
+
+            Q.Test({
+                test: {
+                    message: "Drop table",
+                    fn: function () {
+                        return (typeof reReadBulkTest.results === "undefined");
+                    },
+                    expects: true
+                }
+            });
+
+            Q.Js({fn: function () {
+                    var doc = document,
+                    resultsElm = doc.getElementById("results"),
+                    title = doc.getElementById("test-header"),
+                    li, status, message, tests = Q.Test.instance,
+                    user = doc.getElementById("userAgent"),
+                    stop = 1, expected, results;
+                    user.textContent = window.navigator.userAgent;
+                    title.textContent = doc.title;
+                    tests.forEach(function (test) {
+                        li = doc.createElement("LI");
+                        status = test.status;
+                        if (test.config.test.length) {
+                            message = test.config.test[0].message;
+                            stop = test.results.length;
+                            expected = test.config.test[stop - 1].expects;
+                            results = test.results[stop - 1];
+                        } else {
+                            message = test.config.test.message;
+                            expected = test.config.test.expects;
+                            results = test.results;
+                        }
+                        li.setAttribute("class", status);
+                        message += " ... " + status
+                        if (status === "failed") {
+                            message += " (#" + stop || "";
+                            message += " expected: " + JSON.stringify(expected) + ", ";
+                            message += " results: " + JSON.stringify(results) + ")";
+                        }
+                        li.textContent = message;
+                        resultsElm.appendChild(li);
+                    });
+                }
+            });
+
+            Q.start();
+        </script>
+    </head>
+    <body>
+        <h1 id="test-header"></h1>
+        <h2 id="userAgent"></h2>
+        <ol id="results"></ol>
+    </body>
+</html>

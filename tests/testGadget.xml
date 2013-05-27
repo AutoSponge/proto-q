@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- include in a googlecode wiki page:
+<wiki:gadget url="http://proto-q.googlecode.com/svn/trunk/proto-q/tests/testGadget.xml" width="100%" height="400" />
+-->
+<Module>
+  <ModulePrefs title="proto-Q testing gadget" />
+  <Content type="html"><![CDATA[
+    <iframe src="http://proto-q.googlecode.com/svn/trunk/proto-q/tests/all_tests.html" width="100%" height="398" frameborder=0></iframe>
+  ]]></Content>
+</Module>

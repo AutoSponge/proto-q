@@ -1,0 +1,1256 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: Q   protoQ.js </title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css?stamp=1277838896.95" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css?stamp=1277838896.95" />
+
+    <script type="text/javascript" src="assets/api-js?stamp=1277838896.95"></script>
+    <script type="text/javascript" src="assets/ac-js?stamp=1277838896.95"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://code.google.com/p/proto-q/" title="protoQ Library">protoQ Library</a></h1>
+        <h3>Q&nbsp; <span class="subtitle">1.0.0</span></h3>
+        <a href="./index.html" title="protoQ Library">protoQ Library</a> 
+            &gt; <a href="./module_q.html" title="Q">Q</a>
+                
+                 &gt; protoQ.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+<div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * The Q module provides a way to use asynchronous features sequentially.</span>
+<span class="cm"> * This code was validated with &lt;a href=&quot;http://jslint.com&quot;&gt;JSLint&lt;/a&gt; using</span>
+<span class="cm"> * options: jslint white: true, devel: true, onevar: true, undef: true,</span>
+<span class="cm"> *      eqeqeq: true, plusplus: true, bitwise: true, regexp: true,</span>
+<span class="cm"> *      newcap: true, immed: true, strict: true</span>
+<span class="cm"> *      Predefined: sessionStorage, localStorage, Worker</span>
+<span class="cm"> * @module Q</span>
+<span class="cm"> */</span>
+<span class="s2">&quot;use strict&quot;</span><span class="p">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * The easing module provides methods for customizing</span>
+<span class="cm"> * how an animation behaves during each run.</span>
+<span class="cm"> * @class Q</span>
+<span class="cm"> * @static</span>
+<span class="cm"> */</span>
+<span class="kd">var</span> <span class="nx">Q</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Reference to the window object</span>
+<span class="cm">     * @property win</span>
+<span class="cm">     * @type {DOMWindow}</span>
+<span class="cm">     */</span>
+    <span class="kd">var</span> <span class="nx">win</span> <span class="o">=</span> <span class="k">this</span><span class="p">,</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Reference to the window.document object</span>
+<span class="cm">     * @property doc</span>
+<span class="cm">     * @type {Document}</span>
+<span class="cm">     */</span>
+    <span class="nx">doc</span> <span class="o">=</span> <span class="nx">win</span><span class="p">.</span><span class="nb">document</span><span class="p">,</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Queue of objects</span>
+<span class="cm">     * @property requests</span>
+<span class="cm">     * @type {Array}</span>
+<span class="cm">     */</span>
+    <span class="nx">requests</span> <span class="o">=</span> <span class="p">[],</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Returns the current state of the queue</span>
+<span class="cm">     * @property running</span>
+<span class="cm">     * @type {Boolean}</span>
+<span class="cm">     * @private</span>
+<span class="cm">     */</span>
+    <span class="nx">running</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Returns the current state of the DOM</span>
+<span class="cm">     * @property DOMloaded</span>
+<span class="cm">     * @type {Boolean}</span>
+<span class="cm">     * @private</span>
+<span class="cm">     */</span>
+    <span class="nx">DOMloaded</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Returns the current state of the queue</span>
+<span class="cm">     * @method setDOMloaded</span>
+<span class="cm">     * @param bool {Boolean}</span>
+<span class="cm">     * @return {Boolean}</span>
+<span class="cm">     */</span>
+    <span class="nx">setDOMloaded</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">bool</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nx">DOMloaded</span> <span class="o">=</span> <span class="nx">bool</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Returns array of requests</span>
+<span class="cm">     * @method getRequests</span>
+<span class="cm">     * @return {Array}</span>
+<span class="cm">     */</span>
+    <span class="nx">getRequests</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">requests</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Pushes an object into the requests array</span>
+<span class="cm">     * @method push</span>
+<span class="cm">     * @return {Q}</span>
+<span class="cm">     */</span>
+    <span class="nx">push</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">r</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">requests</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">r</span><span class="p">);</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Removes and invokes the execute method of</span>
+<span class="cm">     * the first requests object</span>
+<span class="cm">     * @method shift</span>
+<span class="cm">     * @return {Q}</span>
+<span class="cm">     */</span>
+    <span class="nx">shift</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">requests</span><span class="p">.</span><span class="nx">shift</span><span class="p">().</span><span class="nx">execute</span><span class="p">();</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Removes all objects from the requests array</span>
+<span class="cm">     * @method clear</span>
+<span class="cm">     * @return {Q}</span>
+<span class="cm">     */</span>
+    <span class="nx">clear</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">requests</span> <span class="o">=</span> <span class="p">[];</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Returns the value of running</span>
+<span class="cm">     * @method getRunning</span>
+<span class="cm">     * @return {Boolean}</span>
+<span class="cm">     */</span>
+    <span class="nx">getRunning</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">running</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Sets the value of running</span>
+<span class="cm">     * @method setRunning</span>
+<span class="cm">     * @param bool {Boolean}</span>
+<span class="cm">     * @return {Boolean}</span>
+<span class="cm">     */</span>
+    <span class="nx">setRunning</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">bool</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nx">running</span> <span class="o">=</span> <span class="nx">bool</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Utility function creates and dispatches an event</span>
+<span class="cm">     * @method event</span>
+<span class="cm">     * @param type {String}</span>
+<span class="cm">     * @param context {Object} the event requestor</span>
+<span class="cm">     * @return {Object} the event requestor</span>
+<span class="cm">     */</span>
+    <span class="nx">event</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">e</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">createEvent</span><span class="p">(</span><span class="s2">&quot;UIEvents&quot;</span><span class="p">);</span>
+        <span class="nx">e</span><span class="p">.</span><span class="nx">initEvent</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+        <span class="nx">e</span><span class="p">.</span><span class="nx">requestor</span> <span class="o">=</span> <span class="nx">context</span> <span class="o">||</span> <span class="kc">null</span><span class="p">;</span>
+        <span class="nx">doc</span><span class="p">.</span><span class="nx">dispatchEvent</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nx">context</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Utility function mixes the properties of objects</span>
+<span class="cm">     * resolving conflicts through overwrites.  The objects</span>
+<span class="cm">     * passed last have the highest priority.</span>
+<span class="cm">     * @method mixin</span>
+<span class="cm">     * @param object {Object} any number of objects</span>
+<span class="cm">     * @return {Object} the modified first object parameter</span>
+<span class="cm">     */</span>
+    <span class="nx">mixin</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="cm">/* {Object}, {Object}, ... */</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">arguments</span><span class="p">),</span>
+        <span class="nx">r</span> <span class="o">=</span> <span class="nx">args</span><span class="p">.</span><span class="nx">shift</span><span class="p">(),</span> <span class="nx">o</span><span class="p">,</span> <span class="nx">m</span><span class="p">;</span>
+        <span class="k">while</span> <span class="p">(</span><span class="nx">args</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">m</span> <span class="o">=</span> <span class="nx">args</span><span class="p">.</span><span class="nx">shift</span><span class="p">();</span>
+            <span class="k">for</span> <span class="p">(</span><span class="nx">o</span> <span class="k">in</span> <span class="nx">m</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">o</span><span class="p">))</span> <span class="p">{</span>
+                    <span class="nx">r</span><span class="p">[</span><span class="nx">o</span><span class="p">]</span> <span class="o">=</span> <span class="nx">m</span><span class="p">[</span><span class="nx">o</span><span class="p">];</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">r</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Sets running to true and creates an execute event</span>
+<span class="cm">     * @method start</span>
+<span class="cm">     * @return {Q}</span>
+<span class="cm">     */</span>
+    <span class="nx">start</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">DOMloaded</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">running</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">running</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="nx">event</span><span class="p">(</span><span class="s2">&quot;Q.request.execute&quot;</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">win</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="nx">Q</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span>
+            <span class="p">},</span> <span class="kc">false</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Stops execution of queue request objects</span>
+<span class="cm">     * @method stop</span>
+<span class="cm">     * @return {Q}</span>
+<span class="cm">     */</span>
+    <span class="nx">stop</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">running</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Returns the length of the requests array</span>
+<span class="cm">     * @method length</span>
+<span class="cm">     * @return {Number}</span>
+<span class="cm">     */</span>
+    <span class="nx">length</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">requests</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+    <span class="p">};</span>
+
+    <span class="nx">setDOMloaded</span><span class="p">((</span><span class="nx">doc</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="s2">&quot;complete&quot;</span><span class="p">));</span>
+
+    <span class="nx">win</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">Q</span><span class="p">.</span><span class="nx">setDOMloaded</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+    <span class="p">},</span> <span class="kc">false</span><span class="p">);</span>
+
+    <span class="nx">doc</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;Q.request&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">Q</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">requestor</span><span class="p">);</span>
+    <span class="p">},</span> <span class="kc">false</span><span class="p">);</span>
+
+    <span class="nx">doc</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;Q.request.execute&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">Q</span><span class="p">.</span><span class="nx">length</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">isRunning</span><span class="p">())</span> <span class="p">{</span>
+            <span class="nx">Q</span><span class="p">.</span><span class="nx">shift</span><span class="p">();</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">Q</span><span class="p">.</span><span class="nx">setRunning</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">},</span> <span class="kc">false</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="nx">push</span><span class="o">:</span> <span class="nx">push</span><span class="p">,</span>
+        <span class="nx">clear</span><span class="o">:</span> <span class="nx">clear</span><span class="p">,</span>
+        <span class="nx">doc</span><span class="o">:</span> <span class="nx">doc</span><span class="p">,</span>
+        <span class="nx">event</span><span class="o">:</span> <span class="nx">event</span><span class="p">,</span>
+        <span class="nx">mixin</span><span class="o">:</span> <span class="nx">mixin</span><span class="p">,</span>
+        <span class="nx">isRunning</span><span class="o">:</span> <span class="nx">getRunning</span><span class="p">,</span>
+        <span class="nx">length</span><span class="o">:</span> <span class="nx">length</span><span class="p">,</span>
+        <span class="nx">start</span><span class="o">:</span> <span class="nx">start</span><span class="p">,</span>
+        <span class="nx">requests</span><span class="o">:</span> <span class="nx">getRequests</span><span class="p">,</span>
+        <span class="nx">setDOMloaded</span><span class="o">:</span> <span class="nx">setDOMloaded</span><span class="p">,</span>
+        <span class="nx">setRunning</span><span class="o">:</span> <span class="nx">setRunning</span><span class="p">,</span>
+        <span class="nx">shift</span><span class="o">:</span> <span class="nx">shift</span><span class="p">,</span>
+        <span class="nx">stop</span><span class="o">:</span> <span class="nx">stop</span><span class="p">,</span>
+        <span class="nx">win</span><span class="o">:</span> <span class="nx">win</span>
+    <span class="p">};</span>
+<span class="p">}());</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * The core class for Q.  This constructor can be</span>
+<span class="cm"> * called like a function with an optional options parameter</span>
+<span class="cm"> * which overrides default configuration.</span>
+<span class="cm"> * @class Class</span>
+<span class="cm"> * @param options {Object} the options parameter</span>
+<span class="cm"> * overrides default configuration</span>
+<span class="cm"> * @namespace Q</span>
+<span class="cm"> * @for Q</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="k">this</span> <span class="k">instanceof</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="cm">/**</span>
+<span class="cm">     * The name of this class.  Useful for identifying</span>
+<span class="cm">     * constructors and parents of objects by class name</span>
+<span class="cm">     * @property name</span>
+<span class="cm">     * @type {String}</span>
+<span class="cm">     * @protected</span>
+<span class="cm">     */</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="s2">&quot;Q.Class&quot;</span><span class="p">;</span>
+    <span class="cm">/**</span>
+<span class="cm">     * The configuration for this instance.</span>
+<span class="cm">     * Config is universally a mixin of defaults and</span>
+<span class="cm">     * the options parameter.</span>
+<span class="cm">     * @property name</span>
+<span class="cm">     * @type {String}</span>
+<span class="cm">     * @protected</span>
+<span class="cm">     */</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">config</span> <span class="o">=</span> <span class="nx">options</span><span class="p">;</span>
+    <span class="cm">/**</span>
+<span class="cm">     * This event invokes the instance&#39;s request method</span>
+<span class="cm">     * upon instantiation</span>
+<span class="cm">     * @event request</span>
+<span class="cm">     * @type Event.UIEvents</span>
+<span class="cm">     */</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Configures an object before execution</span>
+<span class="cm"> * @method configure</span>
+<span class="cm"> * @for Class</span>
+<span class="cm"> * @return {Object} dynamically bound configuration</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">configure</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">,</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Copies properties from obj to c except functions that</span>
+<span class="cm">     * are not values of an &quot;fn&quot; property.  Non-&quot;fn&quot; functions</span>
+<span class="cm">     * are invoked with the Class instance&#39;s context.</span>
+<span class="cm">     * @param c {Object} base config object</span>
+<span class="cm">     * @param obj {Object} properties to copy/invoke</span>
+<span class="cm">     * @return {Object} returns the modified base object</span>
+<span class="cm">     * @private</span>
+<span class="cm">     */</span>
+    <span class="nx">expand</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">o</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">o</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">o</span><span class="p">))</span> <span class="p">{</span>
+                <span class="k">switch</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">o</span><span class="p">])</span> <span class="p">{</span>
+                <span class="k">case</span> <span class="s2">&quot;object&quot;</span><span class="o">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="nx">obj</span><span class="p">[</span><span class="nx">o</span><span class="p">].</span><span class="nx">nodeType</span> <span class="o">||</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">o</span><span class="p">].</span><span class="nx">config</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="nx">c</span><span class="p">[</span><span class="nx">o</span><span class="p">]</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">o</span><span class="p">];</span>
+                    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="nx">obj</span><span class="p">[</span><span class="nx">o</span><span class="p">].</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">name</span> <span class="o">===</span> <span class="s2">&quot;Array&quot;</span><span class="p">)</span> <span class="p">{</span>
+                            <span class="nx">c</span><span class="p">[</span><span class="nx">o</span><span class="p">]</span> <span class="o">=</span> <span class="nx">expand</span><span class="p">([],</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">o</span><span class="p">]);</span>
+                        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                            <span class="nx">c</span><span class="p">[</span><span class="nx">o</span><span class="p">]</span> <span class="o">=</span> <span class="nx">expand</span><span class="p">({},</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">o</span><span class="p">]);</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                    <span class="k">break</span><span class="p">;</span>
+                <span class="k">case</span> <span class="s2">&quot;function&quot;</span><span class="o">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="nx">o</span> <span class="o">===</span> <span class="s2">&quot;fn&quot;</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="nx">c</span><span class="p">[</span><span class="nx">o</span><span class="p">]</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">o</span><span class="p">];</span>
+                    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="nx">c</span><span class="p">[</span><span class="nx">o</span><span class="p">]</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">o</span><span class="p">].</span><span class="nx">apply</span><span class="p">(</span><span class="nx">that</span><span class="p">);</span>
+                    <span class="p">}</span>
+                    <span class="k">break</span><span class="p">;</span>
+                <span class="k">default</span><span class="o">:</span>
+                    <span class="nx">c</span><span class="p">[</span><span class="nx">o</span><span class="p">]</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">o</span><span class="p">];</span>
+                    <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">c</span><span class="p">;</span>
+    <span class="p">};</span>
+    <span class="k">return</span> <span class="nx">expand</span><span class="p">({},</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Add the instance to the requests queue</span>
+<span class="cm"> * @method request</span>
+<span class="cm"> * @for Class</span>
+<span class="cm"> * @return {Object} instance</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">request</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">Q</span><span class="p">.</span><span class="nx">event</span><span class="p">(</span><span class="s2">&quot;Q.request&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Starts executing the queue requests</span>
+<span class="cm"> * @method start</span>
+<span class="cm"> * @for Class</span>
+<span class="cm"> * @return {Q}</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">start</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">Q</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Adds this instance to the request queue</span>
+<span class="cm"> * and executes the first request in the queue.</span>
+<span class="cm"> * @method fire</span>
+<span class="cm"> * @for Class</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">fire</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">().</span><span class="nx">start</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Creates a new instance with the same configuration</span>
+<span class="cm"> * or a mix of this configuration and the options parameter.</span>
+<span class="cm"> * @method clone</span>
+<span class="cm"> * @parameter options {Object}</span>
+<span class="cm"> * @for Class</span>
+<span class="cm"> * @return {Object} instance of Class</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">clone</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="k">this</span><span class="p">.</span><span class="nx">constructor</span><span class="p">(</span><span class="nx">Q</span><span class="p">.</span><span class="nx">mixin</span><span class="p">({},</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">,</span> <span class="nx">options</span><span class="p">));</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Removes the first request from the queue</span>
+<span class="cm"> * @method execute</span>
+<span class="cm"> * @for Class</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">execute</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">Q</span><span class="p">.</span><span class="nx">event</span><span class="p">(</span><span class="s2">&quot;Q.request.execute&quot;</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This class factory creates a subclass constructor with this instance</span>
+<span class="cm"> * as a __super__ property of the new class, inheriting this instance&#39;s</span>
+<span class="cm"> * prototype and configuration.</span>
+<span class="cm"> *</span>
+<span class="cm"> * The new class constructor can be invoked like a function and will</span>
+<span class="cm"> * accept an options parameter which can override default configuration.</span>
+<span class="cm"> * @method subClass</span>
+<span class="cm"> * @param name {String} the reference to the new class</span>
+<span class="cm"> * @param defaults {Object} the default configuration for new</span>
+<span class="cm"> * instances of the new class</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @for Class</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">subClass</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">defaults</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">parent</span> <span class="o">=</span> <span class="k">this</span><span class="p">,</span>
+    <span class="nx">ns</span> <span class="o">=</span> <span class="nx">name</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">).</span><span class="nx">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+    <span class="nx">n</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nx">ns</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">n</span> <span class="o">=</span> <span class="nx">n</span><span class="p">[</span><span class="nx">ns</span><span class="p">.</span><span class="nx">shift</span><span class="p">()];</span>
+    <span class="p">}</span>
+    <span class="nx">n</span><span class="p">[</span><span class="nx">ns</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="k">this</span> <span class="k">instanceof</span> <span class="nx">n</span><span class="p">[</span><span class="nx">ns</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nx">n</span><span class="p">[</span><span class="nx">ns</span><span class="p">[</span><span class="mi">0</span><span class="p">]](</span><span class="nx">options</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">config</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">mixin</span><span class="p">({},</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">config</span><span class="p">,</span> <span class="nx">defaults</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">__super__</span> <span class="o">=</span> <span class="nx">parent</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">();</span>
+    <span class="p">};</span>
+    <span class="nx">Q</span><span class="p">.</span><span class="nx">mixin</span><span class="p">(</span><span class="nx">n</span><span class="p">[</span><span class="nx">ns</span><span class="p">[</span><span class="mi">0</span><span class="p">]].</span><span class="nx">prototype</span><span class="p">,</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This class factory creates a subclass constructor with this instance</span>
+<span class="cm"> * as a __super__ property of the new class, inheriting this instance&#39;s</span>
+<span class="cm"> * prototype and configuration.</span>
+<span class="cm"> * </span>
+<span class="cm"> * The new class will use a singleton pattern (only allowing one</span>
+<span class="cm"> * instance to be created). The new class constructor can be invoked</span>
+<span class="cm"> * like a function and will accept an options parameter which can</span>
+<span class="cm"> * override default configuration.</span>
+<span class="cm"> * </span>
+<span class="cm"> * Singletons are not added to the request queue.</span>
+<span class="cm"> * @method singleton</span>
+<span class="cm"> * @param name {String} the reference to the new class</span>
+<span class="cm"> * @param defaults {Object} the default configuration for new</span>
+<span class="cm"> * instances of the new class</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @for Class</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">singleton</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">defaults</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">parent</span> <span class="o">=</span> <span class="k">this</span><span class="p">,</span>
+    <span class="nx">ns</span> <span class="o">=</span> <span class="nx">name</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">).</span><span class="nx">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+    <span class="nx">n</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nx">ns</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">n</span> <span class="o">=</span> <span class="nx">n</span><span class="p">[</span><span class="nx">ns</span><span class="p">.</span><span class="nx">shift</span><span class="p">()];</span>
+    <span class="p">}</span>
+    <span class="nx">n</span><span class="p">[</span><span class="nx">ns</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">that</span><span class="p">,</span>
+        <span class="nx">instance</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">instance</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">((</span><span class="k">this</span> <span class="k">instanceof</span> <span class="nx">n</span><span class="p">[</span><span class="nx">ns</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span> <span class="o">&amp;&amp;</span> <span class="nx">instance</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">instance</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="k">this</span> <span class="k">instanceof</span> <span class="nx">n</span><span class="p">[</span><span class="nx">ns</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nx">n</span><span class="p">[</span><span class="nx">ns</span><span class="p">[</span><span class="mi">0</span><span class="p">]](</span><span class="nx">options</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">__super__</span> <span class="o">=</span> <span class="nx">parent</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">config</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">mixin</span><span class="p">({},</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">config</span><span class="p">,</span> <span class="nx">defaults</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">instance</span> <span class="o">=</span> <span class="nx">that</span><span class="p">;</span>
+    <span class="p">};</span>
+    <span class="nx">Q</span><span class="p">.</span><span class="nx">mixin</span><span class="p">(</span><span class="nx">n</span><span class="p">[</span><span class="nx">ns</span><span class="p">[</span><span class="mi">0</span><span class="p">]].</span><span class="nx">prototype</span><span class="p">,</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This class factory creates a subclass constructor with this instance</span>
+<span class="cm"> * as a __super__ property of the new class, inheriting this instance&#39;s</span>
+<span class="cm"> * prototype and configuration.</span>
+<span class="cm"> *</span>
+<span class="cm"> * The new class will use a multiton pattern (allowing global access to</span>
+<span class="cm"> * all instances). The new class constructor can be invoked</span>
+<span class="cm"> * like a function and will accept an options parameter which can</span>
+<span class="cm"> * override default configuration.</span>
+<span class="cm"> *</span>
+<span class="cm"> * To reference instances of a multiton, use the constructor.instance array.</span>
+<span class="cm"> *</span>
+<span class="cm"> * example: Q.Test.instance[0]</span>
+<span class="cm"> * @method multiton</span>
+<span class="cm"> * @param name {String} the reference to the new class</span>
+<span class="cm"> * @param defaults {Object} the default configuration for new</span>
+<span class="cm"> * instances of the new class</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @for Class</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">multiton</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">defaults</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">parent</span> <span class="o">=</span> <span class="k">this</span><span class="p">,</span>
+    <span class="nx">ns</span> <span class="o">=</span> <span class="nx">name</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">).</span><span class="nx">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+    <span class="nx">n</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nx">ns</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">n</span> <span class="o">=</span> <span class="nx">n</span><span class="p">[</span><span class="nx">ns</span><span class="p">.</span><span class="nx">shift</span><span class="p">()];</span>
+    <span class="p">}</span>
+    <span class="nx">n</span><span class="p">[</span><span class="nx">ns</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">that</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="k">this</span> <span class="k">instanceof</span> <span class="nx">n</span><span class="p">[</span><span class="nx">ns</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nx">n</span><span class="p">[</span><span class="nx">ns</span><span class="p">[</span><span class="mi">0</span><span class="p">]](</span><span class="nx">options</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">__super__</span> <span class="o">=</span> <span class="nx">parent</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">config</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">mixin</span><span class="p">({},</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">config</span><span class="p">,</span> <span class="nx">defaults</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">instance</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">instance</span> <span class="o">=</span> <span class="p">[];</span>
+        <span class="p">}</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">instance</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">that</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">();</span>
+    <span class="p">};</span>
+    <span class="nx">Q</span><span class="p">.</span><span class="nx">mixin</span><span class="p">(</span><span class="nx">n</span><span class="p">[</span><span class="nx">ns</span><span class="p">[</span><span class="mi">0</span><span class="p">]].</span><span class="nx">prototype</span><span class="p">,</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * The Db class creates a singleton object to connect to</span>
+<span class="cm"> * an HTML5 SQLite database.  This class does not inherit</span>
+<span class="cm"> * the methods of Class.  Instead, other classes rely on the</span>
+<span class="cm"> * Q.Db.instance and will instantiate the singleton as needed.</span>
+<span class="cm"> * This class can be invoked like a function passing override</span>
+<span class="cm"> * options as a parameter.</span>
+<span class="cm"> * @class Db</span>
+<span class="cm"> * @namespace Q</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param options {Object} override any of the default database settings.</span>
+<span class="cm"> *      An object containing the options attributes for</span>
+<span class="cm"> *      a database. Members of this options object include:</span>
+<span class="cm"> *      &lt;ul&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;str shortName:&lt;/strong&gt; Database one-word name.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;str version:&lt;/strong&gt; Database version.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;str displayName:&lt;/strong&gt; Database name.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;number maxsize:&lt;/strong&gt; Maximum size in byts.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;/ul&gt;</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">singleton</span><span class="p">.</span><span class="nx">apply</span><span class="p">({},</span> <span class="p">[</span><span class="s2">&quot;Q.Db&quot;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">shortName</span><span class="o">:</span> <span class="s2">&quot;Q&quot;</span><span class="p">,</span>
+    <span class="nx">version</span><span class="o">:</span> <span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+    <span class="nx">displayName</span><span class="o">:</span> <span class="s2">&quot;Q Database&quot;</span><span class="p">,</span>
+    <span class="nx">maxSize</span><span class="o">:</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
+<span class="p">}]);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Connects this instance to the SQLite database</span>
+<span class="cm"> * described by the class defaults</span>
+<span class="cm"> * @method connect</span>
+<span class="cm"> * @for Db</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Db</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">connect</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">Db</span><span class="p">(),</span> <span class="nx">c</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">config</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">db</span><span class="p">.</span><span class="nx">connection</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">db</span><span class="p">.</span><span class="nx">connection</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">win</span><span class="p">.</span><span class="nx">openDatabase</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">shortName</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">version</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">displayName</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">maxsize</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">db</span><span class="p">.</span><span class="nx">connection</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This class creates objects that will connect to a SQLite</span>
+<span class="cm"> * database in thier execute method.  The stmt option can have</span>
+<span class="cm"> * placeholders using {propertyName[:propertyName...]} notation.</span>
+<span class="cm"> * Placeholders will resolve during execution and serve to allow</span>
+<span class="cm"> * cloning with fewer property replacements.</span>
+<span class="cm"> * @class Sql</span>
+<span class="cm"> * @extends Q.Class</span>
+<span class="cm"> * @namespace Q</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param options {Object} override any of the default database settings.</span>
+<span class="cm"> *      An object containing the options attributes for</span>
+<span class="cm"> *      a SQL statement. Members of this options object include:</span>
+<span class="cm"> *      &lt;ul&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;str stmt:&lt;/strong&gt; SQL statement with optional placeholders.</span>
+<span class="cm"> *      Placeholders are replaced at execute time using the configuration (defaults</span>
+<span class="cm"> *      overridden by this options object).  For instance, to use a statement like</span>
+<span class="cm"> *      &quot;SELECT * FROM {tableName}&quot; add the tableName property to this options object</span>
+<span class="cm"> *      with a string value of the table name to select from.  Nested parameters are</span>
+<span class="cm"> *      resolved converting &quot;:&quot; to bracket notation.  For example, {table:1} will</span>
+<span class="cm"> *      resolve to table[1] in the configuration.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;array args:&lt;/strong&gt; Arguments replace &quot;?&quot; in SQL statements</span>
+<span class="cm"> *      during the database transaction.  See &lt;a href=&quot;http://www.sqlite.org/&quot;&gt;SQLite&lt;/a&gt;</span>
+<span class="cm"> *      documentation.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;/ul&gt;</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">().</span><span class="nx">subClass</span><span class="p">(</span><span class="s2">&quot;Q.Sql&quot;</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Handles data returned from the SQLite database by</span>
+<span class="cm"> * converting the results to an array and assigning the</span>
+<span class="cm"> * array to the object&#39;s results property.</span>
+<span class="cm"> * @method dataHandler</span>
+<span class="cm"> * @for Sql</span>
+<span class="cm"> * @return {Function}</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Sql</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">dataHandler</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+    <span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">transaction</span><span class="p">,</span> <span class="nx">results</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">makeArray</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">results</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">r</span> <span class="o">=</span> <span class="nx">results</span><span class="p">.</span><span class="nx">rows</span> <span class="o">||</span> <span class="nx">results</span><span class="p">,</span>
+            <span class="nx">i</span> <span class="o">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span>
+            <span class="nx">arr</span> <span class="o">=</span> <span class="p">[];</span>
+            <span class="k">while</span> <span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">i</span> <span class="o">-=</span> <span class="mi">1</span><span class="p">;</span>
+                <span class="nx">arr</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">item</span> <span class="o">?</span> <span class="nx">r</span><span class="p">.</span><span class="nx">item</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="o">:</span> <span class="nx">r</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="nx">arr</span><span class="p">;</span>
+        <span class="p">};</span>
+        <span class="nx">that</span><span class="p">.</span><span class="nx">results</span> <span class="o">=</span> <span class="nx">makeArray</span><span class="p">(</span><span class="nx">results</span><span class="p">);</span>
+        <span class="nx">that</span><span class="p">.</span><span class="nx">__super__</span><span class="p">.</span><span class="nx">execute</span><span class="p">();</span>
+    <span class="p">};</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Handles errors returned by the SQLite database</span>
+<span class="cm"> * sending the error information to the console</span>
+<span class="cm"> * and moving to the next request item in the queue.</span>
+<span class="cm"> * @method errorHandler</span>
+<span class="cm"> * @for Sql</span>
+<span class="cm"> * @return {Function}</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Sql</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">errorHandler</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+    <span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">transaction</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&quot;Message:&quot;</span><span class="p">,</span> <span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">,</span> <span class="s2">&quot;Code:&quot;</span><span class="p">,</span> <span class="nx">error</span><span class="p">.</span><span class="nx">code</span><span class="p">);</span>
+        <span class="nx">that</span><span class="p">.</span><span class="nx">__super__</span><span class="p">.</span><span class="nx">execute</span><span class="p">();</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">};</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Executes the SQL statement described by the object&#39;s</span>
+<span class="cm"> * configuration.</span>
+<span class="cm"> * @method execute</span>
+<span class="cm"> * @for Sql</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Sql</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">execute</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">configure</span><span class="p">(),</span>
+    <span class="nx">stmt</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">stmt</span> <span class="o">||</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="nx">args</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">args</span> <span class="o">?</span> <span class="nx">config</span><span class="p">.</span><span class="nx">args</span><span class="p">.</span><span class="nx">slice</span><span class="p">()</span> <span class="o">:</span> <span class="p">[],</span>
+    <span class="nx">callback</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">dataHandler</span><span class="p">(),</span>
+    <span class="nx">errorHandler</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">errorHandler</span><span class="p">(),</span>
+    <span class="nx">placeHolders</span> <span class="o">=</span> <span class="nx">stmt</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\{(\w|:)+?\}/g</span><span class="p">)</span> <span class="o">||</span> <span class="p">[];</span>
+    <span class="nx">placeHolders</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">ph</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">rx</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="nx">ph</span><span class="p">),</span>
+        <span class="nx">val</span> <span class="o">=</span> <span class="nx">config</span><span class="p">,</span>
+        <span class="nx">name</span> <span class="o">=</span> <span class="nx">ph</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">ph</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">);</span>
+        <span class="k">while</span> <span class="p">(</span><span class="nx">name</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">val</span> <span class="o">=</span> <span class="nx">val</span><span class="p">[</span><span class="nx">name</span><span class="p">.</span><span class="nx">shift</span><span class="p">()];</span>
+        <span class="p">}</span>
+        <span class="nx">stmt</span> <span class="o">=</span> <span class="nx">stmt</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">rx</span><span class="p">,</span> <span class="nx">val</span><span class="p">);</span>
+    <span class="p">});</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">stmt</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">Q</span><span class="p">.</span><span class="nx">Db</span><span class="p">().</span><span class="nx">connect</span><span class="p">().</span><span class="nx">transaction</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s2">&quot;object&quot;</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">while</span> <span class="p">(</span><span class="nx">args</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">t</span><span class="p">.</span><span class="nx">executeSql</span><span class="p">(</span><span class="nx">stmt</span><span class="p">,</span> <span class="nx">args</span><span class="p">.</span><span class="nx">shift</span><span class="p">(),</span> <span class="p">{},</span> <span class="nx">errorHandler</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="nx">t</span><span class="p">.</span><span class="nx">executeSql</span><span class="p">(</span><span class="nx">stmt</span><span class="p">,</span> <span class="nx">args</span><span class="p">.</span><span class="nx">shift</span><span class="p">(),</span> <span class="nx">callback</span><span class="p">,</span> <span class="nx">errorHandler</span><span class="p">);</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nx">t</span><span class="p">.</span><span class="nx">executeSql</span><span class="p">(</span><span class="nx">stmt</span><span class="p">,</span> <span class="nx">args</span><span class="p">,</span> <span class="nx">callback</span><span class="p">,</span> <span class="nx">errorHandler</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">});</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">__super__</span><span class="p">.</span><span class="nx">execute</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This class creates objects with a fn property with</span>
+<span class="cm"> * type {Function}.</span>
+<span class="cm"> * @class Js</span>
+<span class="cm"> * @extends Q.Class</span>
+<span class="cm"> * @namespace Q</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param options {Object} the options object overrides</span>
+<span class="cm"> * default configuration.</span>
+<span class="cm"> *      An object containing the options attributes.</span>
+<span class="cm"> *      Members of this options object include:</span>
+<span class="cm"> *      &lt;ul&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;function fn:&lt;/strong&gt; The function to execute.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;array args:&lt;/strong&gt; The arguments to pass to the</span>
+<span class="cm"> *      function at time of execution.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;/ul&gt;</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">().</span><span class="nx">subClass</span><span class="p">(</span><span class="s2">&quot;Q.Js&quot;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">fn</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{}</span>
+<span class="p">});</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Executes the fn function described by the object&#39;s</span>
+<span class="cm"> * configuration using the configuration&#39;s args array</span>
+<span class="cm"> * as the fn function&#39;s arguments.</span>
+<span class="cm"> * @method execute</span>
+<span class="cm"> * @for Js</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Js</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">execute</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">configure</span><span class="p">();</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">results</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">fn</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">args</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">__super__</span><span class="p">.</span><span class="nx">execute</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This class creates objects that communicate with a storage</span>
+<span class="cm"> * object converting all data to type {String} on setItem</span>
+<span class="cm"> * and converting those strings to their natural primitive type</span>
+<span class="cm"> * on getItem actions.  Other actions follow the HTML5 Storage</span>
+<span class="cm"> * API specification.</span>
+<span class="cm"> * @class Storage</span>
+<span class="cm"> * @extends Q.Class</span>
+<span class="cm"> * @namespace Q</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param options {Object} the options object overrides</span>
+<span class="cm"> * default configuration.  An action property is required.  The</span>
+<span class="cm"> * properties key and value are needed for most actions.  Valid</span>
+<span class="cm"> * actions are documented in the HTML5 Storage API.  The expects</span>
+<span class="cm"> * property will be used as a default value if the store[key] value</span>
+<span class="cm"> * is undefined.</span>
+<span class="cm"> *      An object containing the options attributes.</span>
+<span class="cm"> *      Members of this options object include:</span>
+<span class="cm"> *      &lt;ul&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;string action:&lt;/strong&gt; The action execute: &quot;setItem&quot;,</span>
+<span class="cm"> *      &quot;getItem&quot;, &quot;clear&quot;, &quot;key&quot;, &quot;length&quot;, &quot;removeItem&quot;.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;string key:&lt;/strong&gt; The key used by action.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;any value:&lt;/strong&gt; The value (for &quot;setItem&quot;).&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;string expects:&lt;/strong&gt; The default value used if no</span>
+<span class="cm"> *      key or a falsey value is found in the storage object (for &quot;getItem&quot;).&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;object store:&lt;/strong&gt; The object to use for storage.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;/ul&gt;</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">().</span><span class="nx">subClass</span><span class="p">(</span><span class="s2">&quot;Q.Storage&quot;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">action</span><span class="o">:</span> <span class="s2">&quot;setItem&quot;</span><span class="p">,</span>
+    <span class="nx">key</span><span class="o">:</span> <span class="s2">&quot;Q&quot;</span><span class="p">,</span>
+    <span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="nx">expects</span><span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="nx">store</span><span class="o">:</span> <span class="p">{}</span>
+<span class="p">});</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Executes the configured action against the</span>
+<span class="cm"> * configured store using the configured value as</span>
+<span class="cm"> * a parameter if needed.</span>
+<span class="cm"> * @method execute</span>
+<span class="cm"> * @for Storage</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Storage</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">execute</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">,</span> <span class="nx">r</span><span class="p">,</span> <span class="nx">str</span><span class="p">,</span> <span class="nx">s</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">store</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">c</span><span class="p">.</span><span class="nx">value</span> <span class="o">===</span> <span class="s2">&quot;function&quot;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">c</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">call</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="s2">&quot;setItem&quot;</span><span class="o">:</span>
+        <span class="k">switch</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">c</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="s2">&quot;string&quot;</span><span class="o">:</span>
+            <span class="nx">str</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s2">&quot;boolean&quot;</span><span class="o">:</span>
+            <span class="nx">str</span> <span class="o">=</span> <span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="o">?</span> <span class="s2">&quot;b:true&quot;</span> <span class="o">:</span> <span class="s2">&quot;b:false&quot;</span><span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s2">&quot;object&quot;</span><span class="o">:</span>
+            <span class="nx">str</span> <span class="o">=</span> <span class="s2">&quot;j:&quot;</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s2">&quot;number&quot;</span><span class="o">:</span>
+            <span class="nx">str</span> <span class="o">=</span> <span class="s2">&quot;n:&quot;</span> <span class="o">+</span> <span class="nx">c</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="nx">s</span><span class="p">[</span><span class="nx">c</span><span class="p">.</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">str</span><span class="p">;</span>
+        <span class="nx">r</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="k">case</span> <span class="s2">&quot;getItem&quot;</span><span class="o">:</span>
+        <span class="nx">r</span> <span class="o">=</span> <span class="nx">s</span><span class="p">[</span><span class="nx">c</span><span class="p">.</span><span class="nx">key</span><span class="p">]</span> <span class="o">||</span> <span class="nx">c</span><span class="p">.</span><span class="nx">expects</span><span class="p">;</span>
+        <span class="k">switch</span> <span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="s2">&quot;j:&quot;</span><span class="o">:</span>
+            <span class="nx">r</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s2">&quot;b:&quot;</span><span class="o">:</span>
+            <span class="nx">r</span> <span class="o">=</span> <span class="p">(</span><span class="nx">r</span> <span class="o">===</span> <span class="s2">&quot;b:true&quot;</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s2">&quot;n:&quot;</span><span class="o">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">r</span> <span class="o">=</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nx">r</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mi">10</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="k">case</span> <span class="s2">&quot;clear&quot;</span><span class="o">:</span>
+        <span class="nx">s</span><span class="p">.</span><span class="nx">clear</span><span class="p">();</span>
+        <span class="nx">r</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="k">case</span> <span class="s2">&quot;removeItem&quot;</span><span class="o">:</span>
+        <span class="nx">r</span> <span class="o">=</span> <span class="k">delete</span> <span class="nx">s</span><span class="p">[</span><span class="nx">c</span><span class="p">.</span><span class="nx">key</span><span class="p">];</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="k">case</span> <span class="s2">&quot;key&quot;</span><span class="o">:</span>
+        <span class="nx">r</span> <span class="o">=</span> <span class="nx">s</span><span class="p">[</span><span class="nx">c</span><span class="p">.</span><span class="nx">key</span><span class="p">]</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">expects</span><span class="p">;</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="k">case</span> <span class="s2">&quot;length&quot;</span><span class="o">:</span>
+        <span class="nx">r</span> <span class="o">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">results</span> <span class="o">=</span> <span class="nx">r</span><span class="p">;</span>
+    <span class="nx">Q</span><span class="p">.</span><span class="nx">event</span><span class="p">(</span><span class="s2">&quot;Q.request.execute&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This class creates objects that communicate using an</span>
+<span class="cm"> * XMLHttpRequest object.</span>
+<span class="cm"> * @class Ajax</span>
+<span class="cm"> * @extends Q.Class</span>
+<span class="cm"> * @namespace Q</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param options {Object} the options object overrides</span>
+<span class="cm"> * default configuration.  The type, contentType, url, and accepts</span>
+<span class="cm"> * properties are required.</span>
+<span class="cm"> *      An object containing the options attributes.</span>
+<span class="cm"> *      Members of this options object include:</span>
+<span class="cm"> *      &lt;ul&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;string type:&lt;/strong&gt; The request method.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;string contentType:&lt;/strong&gt; Request content type.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;string accepts:&lt;/strong&gt; Allowed response content types</span>
+<span class="cm"> *      (separated by comma).&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;boolean cache:&lt;/strong&gt; Use the browser&#39;s cache if</span>
+<span class="cm"> *      available.  &quot;False&quot; appends a random string to the url requested.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;string url:&lt;/strong&gt; Url to request.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;/ul&gt;</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">().</span><span class="nx">subClass</span><span class="p">(</span><span class="s2">&quot;Q.Ajax&quot;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+    <span class="nx">contentType</span><span class="o">:</span> <span class="s2">&quot;application/x-www-form-urlencoded&quot;</span><span class="p">,</span>
+    <span class="nx">accepts</span><span class="o">:</span> <span class="s2">&quot;*/*&quot;</span><span class="p">,</span>
+    <span class="nx">cache</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nx">dataType</span><span class="o">:</span> <span class="s2">&quot;json&quot;</span>
+<span class="p">});</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Handles the response from an Ajax call</span>
+<span class="cm"> * @method dataHandler</span>
+<span class="cm"> * @for Ajax</span>
+<span class="cm"> * @return {Function}</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Ajax</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">dataHandler</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+    <span class="k">return</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="mi">200</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">that</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="s2">&quot;success&quot;</span><span class="p">;</span>
+                <span class="k">switch</span> <span class="p">(</span><span class="nx">that</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">dataType</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">case</span> <span class="s2">&quot;json&quot;</span><span class="o">:</span>
+                    <span class="nx">that</span><span class="p">.</span><span class="nx">results</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+                    <span class="k">break</span><span class="p">;</span>
+                <span class="k">case</span> <span class="s2">&quot;xml&quot;</span><span class="o">:</span>
+                    <span class="nx">that</span><span class="p">.</span><span class="nx">results</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">responseXML</span><span class="p">;</span>
+                    <span class="k">break</span><span class="p">;</span>
+                <span class="k">default</span><span class="o">:</span>
+                    <span class="nx">that</span><span class="p">.</span><span class="nx">results</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">responseText</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nx">that</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="s2">&quot;failure&quot;</span><span class="p">;</span>
+                <span class="nx">console</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="s2">&quot;Q.Ajax failure&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="nx">that</span><span class="p">.</span><span class="nx">__super__</span><span class="p">.</span><span class="nx">execute</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Creates and sends the XMLHttpRequest using the object&#39;s</span>
+<span class="cm"> * configuration information.</span>
+<span class="cm"> * @method execute</span>
+<span class="cm"> * @for Ajax</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Ajax</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">execute</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">configure</span><span class="p">(),</span>
+    <span class="nx">url</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+    <span class="nx">user</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">user</span> <span class="o">||</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="nx">password</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">password</span> <span class="o">||</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="nx">randomString</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">chars</span> <span class="o">=</span> <span class="s2">&quot;0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz&quot;</span><span class="p">,</span>
+        <span class="nx">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+        <span class="k">while</span> <span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">i</span> <span class="o">-=</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="nx">str</span> <span class="o">+=</span> <span class="nx">chars</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">chars</span><span class="p">.</span><span class="nx">length</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">str</span><span class="p">;</span>
+    <span class="p">};</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">c</span><span class="p">.</span><span class="nx">cache</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">url</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">)</span> <span class="o">!==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">url</span> <span class="o">+=</span> <span class="s2">&quot;&amp;_=&quot;</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">url</span> <span class="o">+=</span> <span class="s2">&quot;?_=&quot;</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="nx">url</span> <span class="o">+=</span> <span class="nx">randomString</span><span class="p">(</span><span class="mi">8</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">win</span><span class="p">.</span><span class="nx">XMLHttpRequest</span><span class="p">();</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">type</span><span class="p">,</span> <span class="nx">url</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">user</span><span class="p">,</span> <span class="nx">password</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">contentType</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s2">&quot;Accept&quot;</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">accepts</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">dataHandler</span><span class="p">();</span>
+    <span class="k">try</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">result</span> <span class="o">=</span> <span class="nx">e</span><span class="p">;</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&quot;Q.Ajax error&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This class creates a request object that will</span>
+<span class="cm"> * become a DOM object during execution. The DOM object</span>
+<span class="cm"> * will have a tag of the tagName property and the</span>
+<span class="cm"> * attributes and events of the attribute and event properties.</span>
+<span class="cm"> * @class Dom</span>
+<span class="cm"> * @extends Q.Class</span>
+<span class="cm"> * @namespace Q</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param options {Object} the options object overrides</span>
+<span class="cm"> * default configuration.</span>
+<span class="cm"> *      An object containing the options attributes.</span>
+<span class="cm"> *      Members of this options object include:</span>
+<span class="cm"> *      &lt;ul&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;string tagName:&lt;/strong&gt; The HTML tag name to create.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;HTMLDomElement parent:&lt;/strong&gt; The parent of the object where</span>
+<span class="cm"> *      it will be inserted into the DOM.  Functions that return</span>
+<span class="cm"> *      elements will be resolved at time of execution.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;object attribute:&lt;/strong&gt; Attributes and their values to</span>
+<span class="cm"> *      be applied to the new DOM object.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;object event:&lt;/strong&gt; Events to be bound to the new object.</span>
+<span class="cm"> *      Events use their HTML property name (e.g., &quot;onload&quot;) and have an &quot;fn&quot;</span>
+<span class="cm"> *      property which is the bound function.  &quot;fn&quot; property functions will not</span>
+<span class="cm"> *      be resolved at execution time but passed as a function value.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;/ul&gt;</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">().</span><span class="nx">subClass</span><span class="p">(</span><span class="s2">&quot;Q.Dom&quot;</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Creates and sends the XMLHttpRequest using the object&#39;s</span>
+<span class="cm"> * configuration information.</span>
+<span class="cm"> * @method execute</span>
+<span class="cm"> * @for Dom</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Dom</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">execute</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">configure</span><span class="p">(),</span> <span class="nx">doc</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">doc</span><span class="p">,</span> <span class="nx">o</span><span class="p">,</span> <span class="nx">elm</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">tagName</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">elm</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">tagName</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">elm</span> <span class="o">&amp;&amp;</span> <span class="nx">c</span><span class="p">.</span><span class="nx">attribute</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">o</span> <span class="k">in</span> <span class="nx">c</span><span class="p">.</span><span class="nx">attribute</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">attribute</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">o</span><span class="p">))</span> <span class="p">{</span>
+                <span class="nx">elm</span><span class="p">[</span><span class="nx">o</span><span class="p">]</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">attribute</span><span class="p">[</span><span class="nx">o</span><span class="p">];</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">elm</span> <span class="o">&amp;&amp;</span> <span class="nx">c</span><span class="p">.</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">o</span> <span class="k">in</span> <span class="nx">c</span><span class="p">.</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">o</span><span class="p">))</span> <span class="p">{</span>
+                <span class="nx">elm</span><span class="p">[</span><span class="nx">o</span><span class="p">]</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">event</span><span class="p">[</span><span class="nx">o</span><span class="p">].</span><span class="nx">fn</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">parent</span> <span class="o">&amp;&amp;</span> <span class="nx">elm</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">c</span><span class="p">.</span><span class="nx">parent</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">elm</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">c</span><span class="p">.</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">__super__</span><span class="p">.</span><span class="nx">execute</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This class creates a request object that will</span>
+<span class="cm"> * become a SCRIPT tag during execution. The SCRIPT</span>
+<span class="cm"> * will execute the next request object after the</span>
+<span class="cm"> * load event.</span>
+<span class="cm"> * @class Script</span>
+<span class="cm"> * @extends Q.Dom</span>
+<span class="cm"> * @param options {Object} the options object overrides</span>
+<span class="cm"> * default configuration.</span>
+<span class="cm"> * @namespace Q.Dom</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Dom</span><span class="p">().</span><span class="nx">subClass</span><span class="p">(</span><span class="s2">&quot;Q.Dom.Script&quot;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">parent</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">doc</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;HEAD&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="p">},</span>
+    <span class="nx">tagName</span><span class="o">:</span> <span class="s2">&quot;SCRIPT&quot;</span><span class="p">,</span>
+    <span class="nx">event</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">onload</span><span class="o">:</span> <span class="p">{</span>
+            <span class="nx">fn</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">scriptHandler</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Advances the request queue once the script loads</span>
+<span class="cm"> * @method scriptHandler</span>
+<span class="cm"> * @for Script</span>
+<span class="cm"> * @return {Fuction}</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Dom</span><span class="p">.</span><span class="nx">Script</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">scriptHandler</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+    <span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">);</span>
+        <span class="nx">that</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="s2">&quot;success&quot;</span><span class="p">;</span>
+        <span class="nx">that</span><span class="p">.</span><span class="nx">__super__</span><span class="p">.</span><span class="nx">execute</span><span class="p">();</span>
+    <span class="p">};</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This class creates a request object that will</span>
+<span class="cm"> * communicate with an HTML5 web worker.</span>
+<span class="cm"> * @class Worker</span>
+<span class="cm"> * @extends Q.Class</span>
+<span class="cm"> * @namespace Q</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param options {Object} the options object overrides</span>
+<span class="cm"> * default configuration.</span>
+<span class="cm"> *      An object containing the options attributes.</span>
+<span class="cm"> *      Members of this options object include:</span>
+<span class="cm"> *      &lt;ul&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;string url:&lt;/strong&gt; The url to post a message to.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;number wait:&lt;/strong&gt; The number of replies the object</span>
+<span class="cm"> *      receives before advancing the queue.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;string message:&lt;/strong&gt; The message sent to the url.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;/ul&gt;</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">().</span><span class="nx">subClass</span><span class="p">(</span><span class="s2">&quot;Q.Worker&quot;</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Advances the request queue once the response message is</span>
+<span class="cm"> * recieved wait number of times.  The reponse should be</span>
+<span class="cm"> * valid JSON.</span>
+<span class="cm"> * @method dataHandler</span>
+<span class="cm"> * @for Script</span>
+<span class="cm"> * @return {Fucntion}</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Worker</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">dataHandler</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">config</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">wait</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">wait</span> <span class="o">||</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="nx">context</span><span class="p">.</span><span class="nx">results</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">data</span><span class="p">));</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">results</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="nx">wait</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">context</span><span class="p">.</span><span class="nx">__super__</span><span class="p">.</span><span class="nx">execute</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Creates the worker object and sends the configured</span>
+<span class="cm"> * message to the configured url.</span>
+<span class="cm"> * @method execute</span>
+<span class="cm"> * @for Script</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Worker</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">execute</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">configure</span><span class="p">();</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">worker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">url</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">results</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">worker</span><span class="p">.</span><span class="nx">onmessage</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">dataHandler</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">c</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">worker</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * A class for constructing Test objects</span>
+<span class="cm"> * @class Test</span>
+<span class="cm"> * @extends Q.Class</span>
+<span class="cm"> * @namespace Q</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param options {Object} the options object overrides</span>
+<span class="cm"> * default configuration.  The test {Object} property has</span>
+<span class="cm"> * a fn {Function} property which is invoked during</span>
+<span class="cm"> * execution.  The test.fn returns to the results property.</span>
+<span class="cm"> * If the results property === the test.expects property,</span>
+<span class="cm"> * the object&#39;s status property is &quot;passed&quot; otherwise the</span>
+<span class="cm"> * status is &quot;failed&quot;.</span>
+<span class="cm"> *      An object containing the options attributes.</span>
+<span class="cm"> *      Members of this options object include:</span>
+<span class="cm"> *      &lt;ul&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;object test: | array test:&lt;/strong&gt; The test group.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;/ul&gt;</span>
+<span class="cm"> *</span>
+<span class="cm"> *      The test object&#39;s properties include:</span>
+<span class="cm"> *      &lt;ul&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;function fn:&lt;/strong&gt; The function will evaluate at time of</span>
+<span class="cm"> *      execution.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;li&gt;&lt;strong&gt;any expects:&lt;/strong&gt; The value to compare (===) to the &quot;fn&quot;</span>
+<span class="cm"> *      property function&#39;s return value.&lt;/li&gt;</span>
+<span class="cm"> *      &lt;/ul&gt;</span>
+<span class="cm"> *</span>
+<span class="cm"> *      The test array is an array of objects like the one above with an fn property</span>
+<span class="cm"> *      and an expects property.  The test status will be &quot;passed&quot; only if all tests</span>
+<span class="cm"> *      pass.</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Class</span><span class="p">().</span><span class="nx">multiton</span><span class="p">(</span><span class="s2">&quot;Q.Test&quot;</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Invokes the configured test function, evaluates the</span>
+<span class="cm"> * results, then advances the request queue.</span>
+<span class="cm"> * @method execute</span>
+<span class="cm"> * @for Test</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Test</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">execute</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">r</span><span class="p">,</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">,</span> <span class="nx">c</span> <span class="o">=</span> <span class="nx">that</span><span class="p">.</span><span class="nx">configure</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">test</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">name</span> <span class="o">===</span> <span class="s2">&quot;Array&quot;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">that</span><span class="p">.</span><span class="nx">results</span> <span class="o">=</span> <span class="p">[];</span>
+        <span class="nx">c</span><span class="p">.</span><span class="nx">test</span><span class="p">.</span><span class="nx">some</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">r</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">fn</span><span class="p">();</span>
+            <span class="nx">that</span><span class="p">.</span><span class="nx">results</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">r</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">r</span> <span class="o">===</span> <span class="nx">e</span><span class="p">.</span><span class="nx">expects</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">that</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="s2">&quot;passed&quot;</span><span class="p">;</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nx">that</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="s2">&quot;failed&quot;</span><span class="p">;</span>
+                <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">});</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">r</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">test</span><span class="p">.</span><span class="nx">fn</span><span class="p">();</span>
+        <span class="nx">that</span><span class="p">.</span><span class="nx">results</span> <span class="o">=</span> <span class="nx">r</span><span class="p">;</span>
+        <span class="nx">that</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="p">(</span><span class="nx">r</span> <span class="o">===</span> <span class="nx">c</span><span class="p">.</span><span class="nx">test</span><span class="p">.</span><span class="nx">expects</span><span class="p">)</span> <span class="o">?</span> <span class="s2">&quot;passed&quot;</span> <span class="o">:</span> <span class="s2">&quot;failed&quot;</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">that</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="s2">&quot;failed&quot;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="s2">&quot;Q.Test failed&quot;</span><span class="p">,</span> <span class="nx">that</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">__super__</span><span class="p">.</span><span class="nx">execute</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This class creates a SQL select * request object</span>
+<span class="cm"> * @class Read</span>
+<span class="cm"> * @extends Q.Sql</span>
+<span class="cm"> * @param options {Object} the options object overrides</span>
+<span class="cm"> * default configuration.  The tableName property is replaced</span>
+<span class="cm"> * at execution time.</span>
+<span class="cm"> * @namespace Q.Sql</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Sql</span><span class="p">().</span><span class="nx">subClass</span><span class="p">(</span><span class="s2">&quot;Q.Sql.Read&quot;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">stmt</span><span class="o">:</span> <span class="s2">&quot;SELECT * FROM {tableName};&quot;</span>
+<span class="p">});</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This class creates a SQL drop table request object</span>
+<span class="cm"> * @class Drop</span>
+<span class="cm"> * @extends Q.Sql</span>
+<span class="cm"> * @param options {Object} the options object overrides</span>
+<span class="cm"> * default configuration.  The tableName property is replaced</span>
+<span class="cm"> * at execution time.</span>
+<span class="cm"> * @namespace Q.Sql</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Sql</span><span class="p">().</span><span class="nx">subClass</span><span class="p">(</span><span class="s2">&quot;Q.Sql.Drop&quot;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">stmt</span><span class="o">:</span> <span class="s2">&quot;DROP TABLE IF EXISTS {tableName};&quot;</span>
+<span class="p">});</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This class creates a localStorage request object</span>
+<span class="cm"> * @class Local</span>
+<span class="cm"> * @extends Q.Storage</span>
+<span class="cm"> * @param options {Object} the options object overrides</span>
+<span class="cm"> * default configuration.</span>
+<span class="cm"> * @namespace Q.Storage</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Storage</span><span class="p">().</span><span class="nx">subClass</span><span class="p">(</span><span class="s2">&quot;Q.Storage.Local&quot;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">store</span><span class="o">:</span> <span class="nx">localStorage</span>
+<span class="p">});</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This class creates a sessionStorage request object</span>
+<span class="cm"> * @class Session</span>
+<span class="cm"> * @extends Q.Storage</span>
+<span class="cm"> * @param options {Object} the options object overrides</span>
+<span class="cm"> * default configuration.</span>
+<span class="cm"> * @namespace Q.Storage</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> */</span>
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Storage</span><span class="p">().</span><span class="nx">subClass</span><span class="p">(</span><span class="s2">&quot;Q.Storage.Session&quot;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">store</span><span class="o">:</span> <span class="nx">sessionStorage</span>
+<span class="p">});</span>
+
+<span class="cm">/**/</span>
+</pre></div>
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class="selected"><a href="module_q.html" title="Q">Q</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="Q.html" title="Q">Q</a></li>
+                                <li class=""><a href="Q.Ajax.html" title="Q.Ajax">Q.Ajax</a></li>
+                                <li class=""><a href="Q.Class.html" title="Q.Class">Q.Class</a></li>
+                                <li class=""><a href="Q.Db.html" title="Q.Db">Q.Db</a></li>
+                                <li class=""><a href="Q.Dom.html" title="Q.Dom">Q.Dom</a></li>
+                                <li class=""><a href="Q.Dom.Script.html" title="Q.Dom.Script">Q.Dom.Script</a></li>
+                                <li class=""><a href="Q.Js.html" title="Q.Js">Q.Js</a></li>
+                                <li class=""><a href="Q.Sql.html" title="Q.Sql">Q.Sql</a></li>
+                                <li class=""><a href="Q.Sql.Drop.html" title="Q.Sql.Drop">Q.Sql.Drop</a></li>
+                                <li class=""><a href="Q.Sql.Read.html" title="Q.Sql.Read">Q.Sql.Read</a></li>
+                                <li class=""><a href="Q.Storage.html" title="Q.Storage">Q.Storage</a></li>
+                                <li class=""><a href="Q.Storage.Local.html" title="Q.Storage.Local">Q.Storage.Local</a></li>
+                                <li class=""><a href="Q.Storage.Session.html" title="Q.Storage.Session">Q.Storage.Session</a></li>
+                                <li class=""><a href="Q.Test.html" title="Q.Test">Q.Test</a></li>
+                                <li class=""><a href="Q.Worker.html" title="Q.Worker">Q.Worker</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class="selected"><a href="protoQ.js.html" title="protoQ.js">protoQ.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2010 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"url": "Q.html#method_clear", "access": "", "host": "Q", "type": "method", "name": "clear"}, {"url": "Q.Class.html#method_clone", "access": "", "host": "Q.Class", "type": "method", "name": "clone"}, {"url": "Q.Class.html#method_configure", "access": "", "host": "Q.Class", "type": "method", "name": "configure"}, {"url": "Q.Db.html#method_connect", "access": "", "host": "Q.Db", "type": "method", "name": "connect"}, {"url": "Q.Sql.html#method_dataHandler", "access": "", "host": "Q.Sql", "type": "method", "name": "dataHandler"}, {"url": "Q.Ajax.html#method_dataHandler", "access": "", "host": "Q.Ajax", "type": "method", "name": "dataHandler"}, {"url": "Q.html#property_doc", "access": "", "host": "Q", "type": "property", "name": "doc"}, {"url": "Q.Sql.html#method_errorHandler", "access": "", "host": "Q.Sql", "type": "method", "name": "errorHandler"}, {"url": "Q.html#method_event", "access": "", "host": "Q", "type": "method", "name": "event"}, {"url": "Q.Class.html#method_execute", "access": "", "host": "Q.Class", "type": "method", "name": "execute"}, {"url": "Q.Sql.html#method_execute", "access": "", "host": "Q.Sql", "type": "method", "name": "execute"}, {"url": "Q.Js.html#method_execute", "access": "", "host": "Q.Js", "type": "method", "name": "execute"}, {"url": "Q.Storage.html#method_execute", "access": "", "host": "Q.Storage", "type": "method", "name": "execute"}, {"url": "Q.Ajax.html#method_execute", "access": "", "host": "Q.Ajax", "type": "method", "name": "execute"}, {"url": "Q.Dom.html#method_execute", "access": "", "host": "Q.Dom", "type": "method", "name": "execute"}, {"url": "Q.Test.html#method_execute", "access": "", "host": "Q.Test", "type": "method", "name": "execute"}, {"url": "Q.Class.html#method_fire", "access": "", "host": "Q.Class", "type": "method", "name": "fire"}, {"url": "Q.html#method_getRequests", "access": "", "host": "Q", "type": "method", "name": "getRequests"}, {"url": "Q.html#method_getRunning", "access": "", "host": "Q", "type": "method", "name": "getRunning"}, {"url": "Q.html#method_length", "access": "", "host": "Q", "type": "method", "name": "length"}, {"url": "Q.html#method_mixin", "access": "", "host": "Q", "type": "method", "name": "mixin"}, {"url": "Q.Class.html#method_multiton", "access": "", "host": "Q.Class", "type": "method", "name": "multiton"}, {"url": "Q.Class.html#property_name", "access": "protected", "host": "Q.Class", "type": "property", "name": "name"}, {"url": "Q.html#method_push", "access": "", "host": "Q", "type": "method", "name": "push"}, {"url": "Q.Class.html#method_request", "access": "", "host": "Q.Class", "type": "method", "name": "request"}, {"url": "Q.Class.html#event_request", "access": "", "host": "Q.Class", "type": "event", "name": "request"}, {"url": "Q.html#property_requests", "access": "", "host": "Q", "type": "property", "name": "requests"}, {"url": "Q.Dom.Script.html#method_scriptHandler", "access": "", "host": "Q.Dom.Script", "type": "method", "name": "scriptHandler"}, {"url": "Q.html#method_setDOMloaded", "access": "", "host": "Q", "type": "method", "name": "setDOMloaded"}, {"url": "Q.html#method_setRunning", "access": "", "host": "Q", "type": "method", "name": "setRunning"}, {"url": "Q.html#method_shift", "access": "", "host": "Q", "type": "method", "name": "shift"}, {"url": "Q.Class.html#method_singleton", "access": "", "host": "Q.Class", "type": "method", "name": "singleton"}, {"url": "Q.html#method_start", "access": "", "host": "Q", "type": "method", "name": "start"}, {"url": "Q.Class.html#method_start", "access": "", "host": "Q.Class", "type": "method", "name": "start"}, {"url": "Q.html#method_stop", "access": "", "host": "Q", "type": "method", "name": "stop"}, {"url": "Q.Class.html#method_subClass", "access": "", "host": "Q.Class", "type": "method", "name": "subClass"}, {"url": "Q.html#property_win", "access": "", "host": "Q", "type": "property", "name": "win"}];
+</script>
+</body>
+</html>
